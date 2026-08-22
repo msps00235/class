@@ -29,7 +29,8 @@ button{font-family:inherit}
 .banner .title .stars{color:var(--red);font-size:18px;letter-spacing:6px}
 @media (max-width:640px){
   .banner svg{height:104px}
-  .banner .title h1{font-size:24px}
+  .banner .title{right:12px;background:rgba(255,248,225,.85);padding:3px 12px;border-radius:14px}
+  .banner .title h1{font-size:22px}
   .banner .title .stars{font-size:13px;letter-spacing:3px}
 }
 
@@ -65,7 +66,11 @@ a.btn{text-decoration:none;display:inline-block;color:var(--ink)}
 .pagegrid{max-width:1120px;margin:0 auto;padding:0 16px;display:flex;gap:20px;align-items:flex-start}
 main{flex:1;min-width:0;padding:20px 0 48px}
 .sidebar{flex:0 0 220px;position:sticky;top:12px;padding:20px 0 0}
-@media (max-width:760px){.pagegrid{flex-direction:column}.sidebar{position:static;flex:none;width:100%;padding-top:0}}
+@media (max-width:760px){
+  .pagegrid{flex-direction:column;align-items:stretch}
+  main{width:100%}
+  .sidebar{position:static;flex:none;width:100%;padding-top:0}
+}
 .section-head{display:flex;align-items:center;gap:10px;background:var(--green);border:2px solid var(--ink);
   border-radius:999px;padding:6px 20px;margin:14px 0 18px;font-family:var(--font-hand);font-size:24px;font-weight:700}
 .section-head svg{width:26px;height:26px}
@@ -132,7 +137,11 @@ button.calday:focus-visible{outline:3px solid var(--navy);outline-offset:2px}
 .callegend{font-size:12px;color:#8a7a5c;margin:10px 0 0;display:flex;align-items:center;gap:6px}
 .callegend .lk{color:var(--gold-deep);font-weight:700;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
 .filterbar{display:flex;align-items:center;flex-wrap:wrap;gap:10px;background:var(--stripe);border-radius:10px;padding:6px 14px;margin-bottom:14px;font-size:15px}
-@media (max-width:760px){.contactwrap{flex-direction:column}.calbox{position:static;width:100%;flex:none;order:-1}}
+@media (max-width:760px){
+  .contactwrap{flex-direction:column;align-items:stretch}
+  .contactmain{width:100%}
+  .calbox{position:static;width:100%;flex:none}
+}
 
 /* 榮譽榜 */
 .honorlist{list-style:none;margin:0;padding:0}
