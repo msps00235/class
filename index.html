@@ -393,12 +393,12 @@ function save(flash){
 /* ── 彈出視窗 ── */
 var overlayEl = null;
 function closeModal(){ if (overlayEl){ overlayEl.remove(); overlayEl = null; } }
-function openModal(inner){
+function openModal(inner, sticky){
   closeModal();
   overlayEl = document.createElement('div');
   overlayEl.className = 'overlay';
   overlayEl.innerHTML = '<div class="modal" role="dialog" aria-modal="true">'+inner+'</div>';
-  overlayEl.addEventListener('click', function(ev){ if (ev.target === overlayEl) closeModal(); });
+  if (!sticky) overlayEl.addEventListener('click', function(ev){ if (ev.target === overlayEl) closeModal(); });
   document.body.appendChild(overlayEl);
   var f = overlayEl.querySelector('input,textarea,button');
   if (f) f.focus();
@@ -420,7 +420,7 @@ function formModal(opt){
   });
   html += '<div class="actions"><button type="button" class="btn" data-x="cancel">取消</button>'+
           '<button type="submit" class="btn primary">'+esc(opt.submitLabel||'儲存')+'</button></div></form>';
-  var ov = openModal(html);
+  var ov = openModal(html, true);
   ov.querySelector('[data-x=cancel]').addEventListener('click', closeModal);
   ov.querySelector('form').addEventListener('submit', function(ev){
     ev.preventDefault();
