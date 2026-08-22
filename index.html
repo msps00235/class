@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <title>班級網頁</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://script.google.com">
+<link rel="preconnect" href="https://script.googleusercontent.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap">
 <style id="page-style">
 *,*::before,*::after{box-sizing:border-box}
@@ -245,7 +247,20 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbzgHIt0SkgZIDHavubHl9QoMY
 var data = JSON.parse(document.getElementById('page-data').textContent);
 ensureDefaults();
 var quoteIdx = Math.floor(Math.random() * Math.max(1, data.quotes.length));
-var loaded = !API_URL, loadError = false;
+var loaded = !API_URL, loadError = false, cachedRaw = '';
+// 上次載入過的資料先立刻顯示，背景再抓最新的（加快開啟速度）
+try {
+  cachedRaw = localStorage.getItem('cwdata') || '';
+  if (cachedRaw){
+    var cached = JSON.parse(cachedRaw);
+    if (cached && cached.news && cached.schedule){
+      data = cached;
+      ensureDefaults();
+      quoteIdx = Math.floor(Math.random() * Math.max(1, data.quotes.length));
+      loaded = true;
+    } else cachedRaw = '';
+  }
+} catch(e){ cachedRaw = ''; }
 var root = document.getElementById('root');
 var teacher = false, tab = 'news', schedEdit = false, schedOpen = false, teacherPw = '', selectedSubj = '';
 try { teacher = sessionStorage.getItem('t404') === '1'; } catch(e){}
@@ -350,7 +365,10 @@ function save(flash){
     .then(function(r){ return r.json(); })
     .then(function(res){
       saving = false;
-      if (res && res.ok){ toast(flash || '已儲存！'); }
+      if (res && res.ok){
+        try { localStorage.setItem('cwdata', JSON.stringify(data)); } catch(e){}
+        toast(flash || '已儲存！');
+      }
       else if (res && res.error === 'bad_pw'){ toast('密碼驗證失敗，請登出後重新登入再試。'); }
       else { toast('儲存失敗，請再試一次。'); }
     })
@@ -941,14 +959,20 @@ if (API_URL){
     .then(function(r){ return r.json(); })
     .then(function(remote){
       if (remote && remote.news && remote.schedule){
-        data = remote;
-        ensureDefaults();
-        quoteIdx = Math.floor(Math.random() * Math.max(1, data.quotes.length));
-      }
-      loaded = true;
-      render();
+        var raw = JSON.stringify(remote);
+        try { localStorage.setItem('cwdata', raw); } catch(e){}
+        if (raw !== cachedRaw){
+          data = remote;
+          ensureDefaults();
+          quoteIdx = Math.floor(Math.random() * Math.max(1, data.quotes.length));
+          loaded = true;
+          render();
+        } else { loaded = true; }
+      } else if (!cachedRaw){ loaded = true; render(); }
     })
-    .catch(function(){ loadError = true; loaded = true; render(); });
+    .catch(function(){
+      if (!cachedRaw){ loadError = true; loaded = true; render(); }
+    });
 }
 })();
 </script>
