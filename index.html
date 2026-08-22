@@ -1,0 +1,800 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>404快樂窩</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style id="page-style">
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0}
+:root{
+  --gold:#F6C21C; --gold-deep:#E8A800; --stripe:#FFF3B0;
+  --paper:#FFF8E1; --cream:#FFFDF0; --green:#EAFAB9;
+  --blue:#B0D8FF; --blue-line:#6699FF;
+  --ink:#4A3520; --navy:#1A2E8C; --red:#E8542A; --pink:#F7A8B8;
+  --font-hand:'LXGW WenKai TC','Noto Sans TC',sans-serif;
+  --font-body:'Noto Sans TC','LXGW WenKai TC',sans-serif;
+}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:17px;line-height:1.75}
+img,svg{max-width:100%}
+a{color:var(--navy)}
+button{font-family:inherit}
+
+/* ── 橫幅 ── */
+.banner{position:relative;background:var(--gold);overflow:hidden}
+.banner svg{display:block;width:100%;height:150px}
+.banner .title{position:absolute;right:20px;top:50%;transform:translateY(-50%);text-align:right;font-family:var(--font-hand)}
+.banner .title h1{margin:0;font-size:38px;font-weight:700;color:#000088;letter-spacing:2px;text-shadow:1px 1px 0 #FFF3B0}
+.banner .title .stars{color:var(--red);font-size:18px;letter-spacing:6px}
+@media (max-width:640px){
+  .banner svg{height:104px}
+  .banner .title h1{font-size:24px}
+  .banner .title .stars{font-size:13px;letter-spacing:3px}
+}
+
+/* ── 老師模式列 ── */
+.teacherbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;background:#FFE9A8;border-bottom:2px dashed var(--gold-deep);padding:8px 16px;font-size:15px}
+.teacherbar .tag{background:var(--red);color:#FFFDF0;border-radius:999px;padding:2px 12px;font-weight:700;font-size:14px}
+.teacherbar .spacer{flex:1}
+
+/* ── 頁籤 ── */
+.tabs{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;max-width:900px;margin:22px auto 0;padding:0 16px}
+.tab{display:flex;align-items:center;gap:8px;border:2.5px solid var(--ink);background:var(--cream);color:var(--ink);
+  font-family:var(--font-hand);font-size:20px;font-weight:700;padding:9px 22px;cursor:pointer;
+  border-radius:18px 26px 16px 24px;box-shadow:2px 3px 0 rgba(74,53,32,.25);transition:transform .12s}
+.tab:hover{transform:translateY(-2px)}
+.tab:focus-visible{outline:3px solid var(--navy);outline-offset:2px}
+.tab svg{width:24px;height:24px}
+.tab.active{transform:rotate(-1.5deg) scale(1.04)}
+.tab[data-tab="news"].active{background:var(--blue)}
+.tab[data-tab="contact"].active{background:var(--green)}
+.tab[data-tab="honor"].active{background:var(--pink)}
+.tab[data-tab="sched"].active{background:var(--stripe)}
+@media (max-width:640px){.tabs{gap:8px}.tab{font-size:17px;padding:7px 14px}}
+
+/* ── 內容區 ── */
+.pagegrid{max-width:1120px;margin:0 auto;padding:0 16px;display:flex;gap:20px;align-items:flex-start}
+main{flex:1;min-width:0;padding:20px 0 48px}
+.sidebar{flex:0 0 220px;position:sticky;top:12px;padding:20px 0 0}
+@media (max-width:760px){.pagegrid{flex-direction:column}.sidebar{position:static;flex:none;width:100%;padding-top:0}}
+.section-head{display:flex;align-items:center;gap:10px;background:var(--green);border:2px solid var(--ink);
+  border-radius:999px;padding:6px 20px;margin:14px 0 18px;font-family:var(--font-hand);font-size:24px;font-weight:700}
+.section-head svg{width:26px;height:26px}
+.section-head .add{margin-left:auto}
+
+.card{background:var(--cream);border-top:2px dotted var(--blue-line);border-bottom:2px dotted var(--blue-line);
+  border-radius:14px;padding:16px 20px;margin-bottom:16px;box-shadow:0 2px 6px rgba(74,53,32,.08)}
+.card h3{margin:0 0 6px;font-family:var(--font-hand);font-size:22px;color:var(--navy)}
+.card .body{white-space:pre-wrap}
+.meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+.datebadge{background:var(--blue);border-radius:999px;padding:1px 12px;font-size:14px;font-weight:700}
+.pin{color:var(--red);font-weight:700;font-size:14px}
+.empty{text-align:center;color:#8a7a5c;padding:36px 0;font-family:var(--font-hand);font-size:20px}
+
+.itemtools{margin-left:auto;display:flex;gap:6px}
+.btn{border:2px solid var(--ink);background:var(--cream);border-radius:12px;padding:4px 14px;font-size:15px;
+  cursor:pointer;box-shadow:1px 2px 0 rgba(74,53,32,.25)}
+.btn:hover{background:var(--stripe)}
+.btn:focus-visible{outline:3px solid var(--navy);outline-offset:2px}
+.btn.primary{background:var(--gold);font-weight:700}
+.btn.danger{background:#FFD6C9}
+.btn.small{padding:2px 10px;font-size:13px;border-radius:9px}
+
+/* 最新消息 */
+.newslist{list-style:none;margin:0;padding:0}
+.newslist li{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px;padding:9px 2px;border-bottom:1px dashed #D9CBA3}
+.newslist li:last-child{border-bottom:none}
+.newslist .hdate{font-size:12px;color:#8a7a5c;margin-left:auto}
+.newslist .itemtools{margin-left:0}
+.newstitle{background:none;border:none;padding:0;cursor:pointer;text-align:left;
+  font-family:var(--font-hand);font-size:20px;font-weight:700;color:var(--navy);
+  text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:var(--blue-line)}
+.newstitle:hover{color:var(--red)}
+.newstitle:focus-visible{outline:3px solid var(--navy);outline-offset:2px}
+.modal.wide{max-width:640px}
+.newsmodal .body{white-space:pre-wrap;margin-top:10px}
+
+/* 聯絡簿 */
+.hwlist{margin:8px 0;padding-left:0;list-style:none;counter-reset:hw}
+.hwlist li{counter-increment:hw;display:flex;gap:10px;align-items:baseline;padding:4px 0;border-bottom:1px dashed #D9CBA3}
+.hwlist li::before{content:counter(hw);flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--gold);
+  border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.notebox{background:var(--stripe);border-radius:10px;padding:8px 14px;margin-top:10px;font-size:16px}
+.notebox strong{color:var(--red)}
+.contactwrap{display:flex;gap:18px;align-items:flex-start}
+.contactmain{flex:1;min-width:0}
+.calbox{flex:0 0 250px;position:sticky;top:12px;background:var(--cream);border-top:2px dotted var(--blue-line);
+  border-bottom:2px dotted var(--blue-line);border-radius:14px;padding:14px 16px;box-shadow:0 2px 6px rgba(74,53,32,.08)}
+.calhead{display:flex;align-items:center;justify-content:space-between;font-family:var(--font-hand);font-size:19px;font-weight:700;margin-bottom:10px}
+.calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.calw{font-size:12px;font-weight:700;color:#8a7a5c;padding:2px 0}
+.calgrid .calday{font-size:14px;display:flex;align-items:center;justify-content:center;
+  width:28px;height:28px;margin:0 auto;padding:0;border-radius:50%;border:2px solid transparent;color:#8a7a5c}
+button.calday{cursor:pointer;background:none;color:var(--gold-deep);font-weight:700;font-size:15px;
+  text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+button.calday:hover{color:var(--red)}
+button.calday:focus-visible{outline:3px solid var(--navy);outline-offset:2px}
+.calgrid .calday.today{border-color:var(--red);border-style:dashed}
+.calgrid .calday.sel{color:var(--red)}
+.callegend{font-size:12px;color:#8a7a5c;margin:10px 0 0;display:flex;align-items:center;gap:6px}
+.callegend .lk{color:var(--gold-deep);font-weight:700;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+.filterbar{display:flex;align-items:center;flex-wrap:wrap;gap:10px;background:var(--stripe);border-radius:10px;padding:6px 14px;margin-bottom:14px;font-size:15px}
+@media (max-width:760px){.contactwrap{flex-direction:column}.calbox{position:static;width:100%;flex:none;order:-1}}
+
+/* 榮譽榜 */
+.honorlist{list-style:none;margin:0;padding:0}
+.honorlist li{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px;padding:9px 2px;border-bottom:1px dashed #D9CBA3}
+.honorlist li:last-child{border-bottom:none}
+.honorlist .honorstar{width:20px;height:20px;flex:0 0 auto;align-self:center}
+.honorlist .who{font-family:var(--font-hand);font-size:20px;font-weight:700;color:var(--navy)}
+.honorlist .deed{font-size:16px}
+.honorlist .hdate{font-size:12px;color:#8a7a5c;margin-left:auto}
+.honorlist .itemtools{margin-left:0}
+
+/* 功課表 */
+.schedwrap{overflow-x:auto;border-radius:14px}
+table.sched{border-collapse:separate;border-spacing:4px;width:100%;min-width:620px;background:var(--cream);
+  border-radius:14px;padding:8px;border-top:2px dotted var(--blue-line);border-bottom:2px dotted var(--blue-line)}
+.sched th{background:var(--blue);border-radius:10px;padding:6px 4px;font-family:var(--font-hand);font-size:18px}
+.sched th.corner{background:var(--green)}
+.sched td{border-radius:10px;text-align:center;padding:7px 4px;font-size:16px;background:#F5F0DF}
+.sched td.plabel{background:var(--green);font-weight:700;white-space:nowrap;padding:7px 10px}
+.sched td.plabel small{display:block;font-weight:400;font-size:12px;color:#6b5a3e}
+.sched tr.divider td{background:var(--stripe);font-family:var(--font-hand);font-weight:700;letter-spacing:6px}
+.sched [contenteditable="true"]{outline:2px dashed var(--red);outline-offset:-2px;background:#fff;cursor:text}
+.schedtools{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.colorlist{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px;
+  background:var(--cream);border-radius:12px;padding:8px 12px}
+.colorlist .collab{font-weight:700;font-size:14px}
+.colorchip{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--ink);border-radius:999px;
+  padding:2px 10px 2px 4px;font-size:14px;font-weight:700;cursor:pointer}
+.colorchip input[type=color]{width:22px;height:22px;border:1.5px solid var(--ink);border-radius:50%;
+  padding:0;background:none;cursor:pointer}
+.schedmini{position:relative;background:var(--cream);border-top:2px dotted var(--blue-line);border-bottom:2px dotted var(--blue-line);
+  border-radius:14px;padding:10px 10px 12px;box-shadow:0 2px 6px rgba(74,53,32,.08)}
+.minihead{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;background:var(--green);
+  border:2px solid var(--ink);border-radius:999px;padding:3px 12px;font-family:var(--font-hand);
+  font-size:17px;font-weight:700;color:var(--ink);cursor:pointer;margin-bottom:8px}
+.minihead svg{width:18px;height:18px}
+.minihead:focus-visible{outline:3px solid var(--navy);outline-offset:2px}
+table.mini{width:100%;border-collapse:separate;border-spacing:2px;font-size:11px;line-height:1.35}
+.mini th{background:var(--blue);border-radius:5px;padding:2px 1px;font-weight:700}
+.mini td{background:#F5F0DF;border-radius:5px;text-align:center;padding:2px 1px}
+.mini .mdiv{background:var(--stripe);letter-spacing:2px}
+.minitip{font-size:11px;color:#8a7a5c;text-align:center;margin:6px 0 0}
+.schedpanel{position:absolute;right:100%;top:0;z-index:40;visibility:hidden;opacity:0;transform:scale(.55);transform-origin:100% 30px;
+  width:min(680px,calc(100vw - 300px));max-height:calc(100vh - 40px);overflow:auto;
+  background:var(--paper);border:3px solid var(--ink);border-radius:18px;
+  box-shadow:4px 6px 0 rgba(74,53,32,.3);padding:14px 16px}
+.schedmini:hover .schedpanel,.schedmini.open .schedpanel{visibility:visible;opacity:1;transform:scale(1)}
+.schedtitle{display:flex;align-items:center;gap:8px;font-family:var(--font-hand);font-size:22px;font-weight:700;color:var(--navy);margin-bottom:8px}
+.schedtitle svg{width:24px;height:24px}
+@media (prefers-reduced-motion:no-preference){.schedpanel{transition:transform .2s ease,opacity .2s ease,visibility .2s}}
+@media (max-width:760px){
+  .schedpanel{position:fixed;left:10px;right:10px;top:76px;width:auto;transform-origin:center top;max-height:calc(100vh - 100px)}
+  .schedmini:hover:not(.open) .schedpanel{visibility:hidden;opacity:0;transform:scale(.55)}
+}
+
+/* 頁尾 */
+footer{max-width:880px;margin:0 auto;padding:8px 16px 40px;display:flex;align-items:center;gap:12px;color:#8a7a5c;font-size:14px}
+footer .spacer{flex:1}
+.keybtn{background:none;border:none;color:#B5A379;font-size:13px;cursor:pointer;text-decoration:underline dotted}
+.keybtn:hover{color:var(--ink)}
+
+/* ── 彈出視窗 ── */
+.overlay{position:fixed;inset:0;background:rgba(74,53,32,.45);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+.modal{background:var(--cream);border:3px solid var(--ink);border-radius:22px 30px 20px 28px;max-width:460px;width:100%;
+  padding:22px 24px;box-shadow:4px 6px 0 rgba(74,53,32,.3);max-height:90vh;overflow-y:auto}
+.modal h2{margin:0 0 14px;font-family:var(--font-hand);font-size:24px;color:var(--navy)}
+.modal label{display:block;font-weight:700;font-size:15px;margin:12px 0 4px}
+.modal input[type=text],.modal input[type=date],.modal input[type=password],.modal textarea{
+  width:100%;border:2px solid var(--ink);border-radius:10px;padding:8px 10px;font-size:16px;font-family:inherit;background:#fff;color:var(--ink)}
+.modal textarea{min-height:96px;resize:vertical}
+.modal .check{display:flex;align-items:center;gap:8px;margin-top:14px;font-weight:700;font-size:15px}
+.modal .actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+.modal .hint{font-size:13px;color:#8a7a5c;margin:4px 0 0}
+
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--ink);color:var(--cream);
+  border-radius:999px;padding:8px 22px;font-size:15px;z-index:60;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+@media (prefers-reduced-motion:no-preference){
+  .toast{animation:pop .25s ease}
+  @keyframes pop{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%)}}
+}
+</style>
+
+</head>
+<body>
+<div id="root"></div>
+
+<script type="application/json" id="page-data">{"pw":"1ch04bj","news":[{"id":"n2","date":"2026-08-22","title":"8/31 (一)開學日提醒","body":"親愛的404同學：\naaa\n　　暑假已經接近尾聲，再過不到兩週就要回到學校，與同學老師見面，你是否都已經準備好了呢？\n\n　　這次回到學校就是四年級的學生了，請記得直接到四年４班教室上課。\n\n　　你的暑假自主學習任務和品格紀錄卡是否都正在進行並美化內容呢？如果已經完成了，看看是否可以更好；如果還在進行中，要努力用心的把內容做好。\n\n　　記得，把簡單的事情用心做，就是不簡單喔！\n\n　　請把起床和睡覺的時間慢慢調成上學狀態，讓開學當天的早上可以輕鬆自在的起床、換衣服、吃早餐，並安全準時的到學校上課。\n\n　　這段時間也要把帶到學校的用具好好仔細的檢查並完成：\n　　桌墊清洗完要記得捲起來放進書包 ～\n　　原子筆、螢光筆、白板筆都還能寫得出來嗎？\n　　彩虹筆每種顏色的筆芯都還能塗出顏色嗎？\n　　鉛筆都削尖了嗎？會太短嗎？\n　　橡皮擦能夠擦得乾淨嗎？\n　　姓名貼放一張在鉛筆盒裡了嗎？\n　　墊板準備好了嗎？(可以有99乘法表)\n　　膠帶和雙面膠快用完了嗎？要準備新的替換嗎？\n　　膠水和口紅膠都能塗出黏膠嗎？好塗嗎？\n　　口罩都還適合戴嗎？會太緊或太鬆嗎？\n　　水壺、餐碗都帶了嗎？能自己打開不用老師幫忙嗎？\n　　潔牙用具有沒有發霉需要更換或刷洗？\n　　輕便雨衣、字典、跳繩都準備了嗎？\n　　\n　　以上物品都已經貼上姓名貼了嗎？\n\n　　另外，別忘了高音直笛(英式)和書法用具唷～(可等上課後聽老師說明再帶來學校)\n　　著色用具每一枝都要檢查能不能塗色，最慢請在9/3(四)帶來學校檢查。\n\n　　\n　　新的學期第一天，希望每個人都能精神滿滿，準備充足的到學校上課。期待看到每個人都能熱情有活力的向老師打招呼喔！祝\n　　平安健康，快樂返校","pin":true},{"id":"imt4311eifs7d","date":"2026-08-22","title":"test","body":"ttt","pin":false},{"id":"imt431mnad9lo","date":"2026-08-22","title":"tt","body":"tt","pin":false},{"id":"imt431qh74exu","date":"2026-08-22","title":"ttt","body":"ttt","pin":false},{"id":"imt431uuqjw8w","date":"2026-08-22","title":"ttt","body":"ttt","pin":false},{"id":"imt4321ge2s0a","date":"2026-08-22","title":"tt1","body":"tt","pin":false},{"id":"imt43290vbste","date":"2026-08-22","title":"tt2","body":"tt1","pin":false},{"id":"imt432g5kg0rj","date":"2026-08-22","title":"tt2","body":"tt3","pin":false},{"id":"imt432kqmh1n0","date":"2026-08-22","title":"tt3","body":"tt3","pin":false},{"id":"imt432qaub360","date":"2026-08-22","title":"tt4","body":"r","pin":false},{"id":"imt432ulo5dl6","date":"2026-08-22","title":"6","body":"6","pin":false},{"id":"imt4330af8y6a","date":"2026-08-22","title":"7","body":"7","pin":false},{"id":"imt4337a16og2","date":"2026-08-22","title":"8","body":"8","pin":false}],"contact":[{"id":"c1","date":"2026-08-31","hw":["國語習作 P.2～P.3","數學課本 P.8 練習題","閱讀課外書 20 分鐘"],"note":"明天穿運動服；請家長檢查並簽名。（這是範例，老師登入後可修改）"}],"honor":[{"id":"h1","date":"2026-08-22","name":"王小明","deed":"模範生（範例）"},{"id":"h2","date":"2026-08-22","name":"林小美","deed":"作業優良（範例）"}],"schedule":{"days":["週一","週二","週三","週四","週五"],"rows":[{"label":"早自習","time":"8:00–8:40","cells":["導師時間","晨光閱讀","兒童朝會","導師時間","晨光閱讀"]},{"label":"第一節","time":"8:45–9:25","cells":["國語","數學","國語","數學","國語"]},{"label":"第二節","time":"9:35–10:15","cells":["數學","國語","數學","國語","英語"]},{"label":"第三節","time":"10:30–11:10","cells":["自然","英語","社會","自然","數學"]},{"label":"第四節","time":"11:20–12:00","cells":["自然","音樂","社會","體育","社會"]},{"label":"午餐・午休","time":"12:00–13:20","cells":null},{"label":"第五節","time":"13:30–14:10","cells":["綜合","視覺藝術","—","健康","體育"]},{"label":"第六節","time":"14:20–15:00","cells":["綜合","視覺藝術","—","彈性","音樂"]},{"label":"第七節","time":"15:10–15:50","cells":["綜合","國語","—","彈性","自然"]}]}}</script>
+
+<script id="app">
+(function(){
+'use strict';
+// ▼ 部署 Google Apps Script 後，把「網頁應用程式」網址貼在下面的引號中
+var API_URL = 'https://script.google.com/macros/s/AKfycbzgHIt0SkgZIDHavubHl9QoMYvRgMgkFrSGhN_OVbdn3OM_dlG9wlznBzmn5WovWND1/exec';
+var data = JSON.parse(document.getElementById('page-data').textContent);
+var root = document.getElementById('root');
+var teacher = false, tab = 'news', schedEdit = false, schedOpen = false, teacherPw = '';
+try { teacher = sessionStorage.getItem('t404') === '1'; } catch(e){}
+try { teacherPw = sessionStorage.getItem('t404pw') || ''; } catch(e){}
+var selDate = null;
+var calInit = (function(){
+  var latest = data.contact.slice().sort(byDateDesc)[0];
+  var d = latest ? new Date(latest.date+'T00:00:00') : new Date();
+  if (isNaN(d)) d = new Date();
+  return d;
+})();
+var calY = calInit.getFullYear(), calM = calInit.getMonth();
+
+/* ── 工具 ── */
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function hash(s){ var h=5381,i; for(i=0;i<s.length;i++){ h=((h<<5)+h+s.charCodeAt(i))>>>0; } return h.toString(36); }
+function uid(){ return 'i'+Date.now().toString(36)+Math.floor(Math.random()*1e6).toString(36); }
+function today(){ var d=new Date(),m=('0'+(d.getMonth()+1)).slice(-2),dd=('0'+d.getDate()).slice(-2);
+  return d.getFullYear()+'-'+m+'-'+dd; }
+function fmtDate(s){
+  var d = new Date(s+'T00:00:00');
+  if (isNaN(d)) return esc(s);
+  var w = '日一二三四五六'.charAt(d.getDay());
+  var y = (d.getFullYear() !== (new Date()).getFullYear()) ? d.getFullYear()+'年' : '';
+  return y+(d.getMonth()+1)+'月'+d.getDate()+'日（'+w+'）';
+}
+function byDateDesc(a,b){ return a.date<b.date?1:(a.date>b.date?-1:0); }
+
+var SUBJ_COLORS = [['國語','#FFE0B3'],['數學','#CFE8FF'],['英語','#E6D6FF'],['英文','#E6D6FF'],
+  ['自然','#D4F2C2'],['社會','#FFD6D6'],['體育','#C2F0E8'],['音樂','#FFD9EC'],
+  ['視覺','#FFF3B0'],['美勞','#FFF3B0'],['美術','#FFF3B0'],['綜合','#E8E3D3'],
+  ['健康','#D9F2D0'],['彈性','#EDE7F6'],['閩南','#F6E3C5'],['本土','#F6E3C5'],['電腦','#D8EEF2'],['資訊','#D8EEF2']];
+function subjColor(name){
+  name = String(name||'').trim();
+  var custom = data.schedule.colors || {};
+  if (custom[name]) return custom[name];
+  for (var i=0;i<SUBJ_COLORS.length;i++){ if (name && name.indexOf(SUBJ_COLORS[i][0])>=0) return SUBJ_COLORS[i][1]; }
+  return '#F5F0DF';
+}
+function uniqueSubjects(){
+  var out = [], have = {};
+  data.schedule.rows.forEach(function(r){
+    (r.cells||[]).forEach(function(c){
+      c = String(c||'').trim();
+      if (!c || c === '—' || have[c]) return;
+      have[c] = 1; out.push(c);
+    });
+  });
+  return out;
+}
+
+var ICON = {
+  news:'<svg viewBox="0 0 24 24" fill="none" stroke="#4A3520" stroke-width="1.8" stroke-linejoin="round"><path d="M3 13 L20 4 L14 20 L11 14 Z" fill="#FFFDF0"/><path d="M11 14 L20 4" /></svg>',
+  contact:'<svg viewBox="0 0 24 24" fill="none" stroke="#4A3520" stroke-width="1.8"><rect x="5" y="4" width="15" height="17" rx="2" fill="#FFFDF0"/><line x1="9" y1="9" x2="16" y2="9"/><line x1="9" y1="13" x2="16" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/><circle cx="5" cy="8" r="1.2" fill="#E8542A" stroke="none"/><circle cx="5" cy="13" r="1.2" fill="#E8542A" stroke="none"/><circle cx="5" cy="18" r="1.2" fill="#E8542A" stroke="none"/></svg>',
+  honor:'<svg viewBox="0 0 24 24" fill="#F6C21C" stroke="#4A3520" stroke-width="1.6" stroke-linejoin="round"><path d="M12 2.5 L14.6 8.6 L21.2 9.2 L16.2 13.5 L17.7 20 L12 16.6 L6.3 20 L7.8 13.5 L2.8 9.2 L9.4 8.6 Z"/></svg>',
+  sched:'<svg viewBox="0 0 24 24" fill="none" stroke="#4A3520" stroke-width="1.8"><rect x="3.5" y="5" width="17" height="15" rx="2.5" fill="#FFFDF0"/><line x1="3.5" y1="10" x2="20.5" y2="10"/><line x1="9.5" y1="10" x2="9.5" y2="20"/><line x1="15.5" y1="10" x2="15.5" y2="20"/><line x1="7.5" y1="3" x2="7.5" y2="7" stroke="#E8542A"/><line x1="16.5" y1="3" x2="16.5" y2="7" stroke="#E8542A"/></svg>',
+  star:'<svg class="honorstar" viewBox="0 0 48 48"><path d="M24 4 L29.5 17 L43 18.2 L32.8 27.4 L36 41 L24 33.8 L12 41 L15.2 27.4 L5 18.2 L18.5 17 Z" fill="#F6C21C" stroke="#4A3520" stroke-width="2" stroke-linejoin="round"/><circle cx="19.5" cy="23" r="1.6" fill="#4A3520"/><circle cx="28.5" cy="23" r="1.6" fill="#4A3520"/><path d="M20.5 28 Q24 31 27.5 28" fill="none" stroke="#4A3520" stroke-width="1.8" stroke-linecap="round"/></svg>'
+};
+
+var BANNER =
+'<svg viewBox="0 0 960 150" preserveAspectRatio="xMinYMid slice" aria-hidden="true">'+
+'<rect width="960" height="150" fill="#F6C21C"/>'+
+'<path d="M-20 95 Q 300 55 960 88 L 960 104 Q 300 74 -20 112 Z" fill="#FFF3B0"/>'+
+'<path d="M-20 120 Q 350 85 960 112 L 960 122 Q 350 98 -20 132 Z" fill="#FFFFFF" opacity=".85"/>'+
+'<path d="M-20 60 Q 400 35 960 55 L 960 62 Q 400 44 -20 68 Z" fill="#FFDE59" opacity=".9"/>'+
+'<circle cx="560" cy="45" r="5" fill="#E8542A"/><circle cx="640" cy="95" r="8" fill="#E8542A" opacity=".85"/>'+
+'<circle cx="710" cy="60" r="4" fill="#FFFFFF"/><circle cx="500" cy="120" r="6" fill="#FFFFFF"/>'+
+'<circle cx="835" cy="35" r="4" fill="#E8542A"/><circle cx="760" cy="128" r="5" fill="#FFF3B0"/>'+
+'<circle cx="880" cy="105" r="3.5" fill="#FFFFFF"/><circle cx="600" cy="18" r="3.5" fill="#FFF3B0"/>'+
+'<g transform="translate(330,28) rotate(-12)" stroke="#4A3520" stroke-width="2.5" stroke-linejoin="round">'+
+'<path d="M0 14 L52 0 L34 30 Z" fill="#FFFDF0"/><path d="M0 14 L34 12 L34 30 Z" fill="#E4D9BC"/></g>'+
+'<path d="M300 62 Q 285 72 292 84 Q 280 92 288 102" fill="none" stroke="#4A3520" stroke-width="2" stroke-linecap="round"/>'+
+'<g transform="translate(212,78) rotate(14)" stroke="#4A3520" stroke-width="2.5" stroke-linejoin="round">'+
+'<path d="M0 -26 L18 0 L0 26 L-18 0 Z" fill="#B0D8FF"/><line x1="0" y1="-26" x2="0" y2="26"/><line x1="-18" y1="0" x2="18" y2="0"/>'+
+'<path d="M0 26 Q 8 36 2 46 Q -4 56 4 66" fill="none" stroke-width="2"/></g>'+
+'<g transform="translate(120,88)" stroke="#4A3520" stroke-width="2.5">'+
+'<ellipse cx="0" cy="10" rx="30" ry="22" fill="#F7A8B8"/>'+
+'<path d="M-24 -8 L-16 -18 L-10 -8 Z" fill="#F7A8B8" stroke-linejoin="round"/>'+
+'<path d="M10 -10 L18 -19 L24 -8 Z" fill="#F7A8B8" stroke-linejoin="round"/>'+
+'<ellipse cx="14" cy="12" rx="9" ry="7" fill="#FBC9D4"/>'+
+'<circle cx="11" cy="12" r="1.6" fill="#4A3520" stroke="none"/><circle cx="17" cy="12" r="1.6" fill="#4A3520" stroke="none"/>'+
+'<circle cx="-6" cy="4" r="2" fill="#4A3520" stroke="none"/>'+
+'<line x1="-14" y1="30" x2="-14" y2="38"/><line x1="8" y1="30" x2="8" y2="38"/></g>'+
+'<g transform="translate(34,66)" stroke="#4A3520" stroke-width="2.5" stroke-linejoin="round">'+
+'<rect x="0" y="34" width="26" height="26" fill="#59B8B0"/><rect x="30" y="34" width="26" height="26" fill="#E8542A"/>'+
+'<rect x="14" y="6" width="26" height="26" fill="#F0863C"/>'+
+'<circle cx="13" cy="47" r="5" fill="#FFF3B0"/><rect x="36" y="40" width="14" height="14" fill="#FFF3B0"/>'+
+'<path d="M20 19 L27 12 L34 19 L27 26 Z" fill="#FFF3B0"/></g>'+
+'</svg>';
+
+/* ── 儲存（發布新版本） ── */
+function buildHtml(d){
+  var style = document.getElementById('page-style').textContent;
+  var app = document.getElementById('app').textContent;
+  var json = JSON.stringify(d).replace(/</g,'\\u003c');
+  return '<!doctype html>\n<html lang="zh-Hant">\n<head>\n<meta charset="utf-8">\n'+
+    '<meta name="viewport" content="width=device-width, initial-scale=1">\n'+
+    '<title>404快樂窩</title>\n'+
+    '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap">\n'+
+    '<style id="page-style">'+style+'</style>\n</head>\n<body>\n<div id="root"></div>\n'+
+    '<script type="application/json" id="page-data">'+json+'<\/script>\n'+
+    '<script id="app">'+app+'<\/script>\n</body>\n</html>';
+}
+var saving = false;
+function save(flash){
+  if (saving) return;
+  saving = true;
+  toast('儲存中…', true);
+  if (API_URL){
+    render();
+    fetch(API_URL, {method:'POST', body: JSON.stringify({action:'save', pw: teacherPw, data: data})})
+      .then(function(r){ return r.json(); })
+      .then(function(res){
+        saving = false;
+        if (res && res.ok){ toast(flash || '已儲存！'); }
+        else if (res && res.error === 'bad_pw'){ toast('密碼驗證失敗，請登出後重新登入再試。'); }
+        else { toast('儲存失敗，請再試一次。'); }
+      })
+      .catch(function(){ saving = false; toast('連不上資料伺服器，請檢查網路後再試一次。'); });
+    return;
+  }
+  var done = function(){ saving = false; };
+  var p = (window.claude && window.claude.use) ? claude.use('artifact') : Promise.resolve(null);
+  p.then(function(art){
+    if (!art){ done(); toast('這個檢視無法儲存，請開啟已發布的網頁再試。'); return; }
+    try { sessionStorage.setItem('t404flash', flash || '已儲存！'); } catch(e){}
+    return art.publish(buildHtml(data)).then(function(){ /* 成功後頁面會自動重新載入 */ });
+  }).catch(function(e){
+    done();
+    try { sessionStorage.removeItem('t404flash'); } catch(err){}
+    var code = e && e.code;
+    if (code === 'conflict'){ toast('別處剛發布了新版本，頁面即將更新。'); }
+    else if (code === 'not_writer' || code === 'not_granted'){ toast('只有網頁擁有者（老師的帳號）能儲存變更。'); }
+    else if (code === 'rate_limited'){ toast('儲存太頻繁了，請過幾秒再試。'); }
+    else { toast('儲存失敗，請再試一次。'); }
+  });
+}
+
+/* ── 彈出視窗 ── */
+var overlayEl = null;
+function closeModal(){ if (overlayEl){ overlayEl.remove(); overlayEl = null; } }
+function openModal(inner){
+  closeModal();
+  overlayEl = document.createElement('div');
+  overlayEl.className = 'overlay';
+  overlayEl.innerHTML = '<div class="modal" role="dialog" aria-modal="true">'+inner+'</div>';
+  overlayEl.addEventListener('click', function(ev){ if (ev.target === overlayEl) closeModal(); });
+  document.body.appendChild(overlayEl);
+  var f = overlayEl.querySelector('input,textarea,button');
+  if (f) f.focus();
+  return overlayEl;
+}
+function formModal(opt){
+  var html = '<h2>'+esc(opt.title)+'</h2><form>';
+  opt.fields.forEach(function(fl){
+    if (fl.type === 'checkbox'){
+      html += '<label class="check"><input type="checkbox" name="'+fl.key+'"'+(fl.value?' checked':'')+'> '+esc(fl.label)+'</label>';
+    } else if (fl.type === 'textarea'){
+      html += '<label>'+esc(fl.label)+'</label><textarea name="'+fl.key+'" placeholder="'+esc(fl.placeholder||'')+'">'+esc(fl.value||'')+'</textarea>';
+    } else {
+      html += '<label>'+esc(fl.label)+'</label><input type="'+fl.type+'" name="'+fl.key+'" value="'+esc(fl.value||'')+'" placeholder="'+esc(fl.placeholder||'')+'"'+(fl.required?' required':'')+'>';
+    }
+    if (fl.hint) html += '<p class="hint">'+esc(fl.hint)+'</p>';
+  });
+  html += '<div class="actions"><button type="button" class="btn" data-x="cancel">取消</button>'+
+          '<button type="submit" class="btn primary">'+esc(opt.submitLabel||'儲存')+'</button></div></form>';
+  var ov = openModal(html);
+  ov.querySelector('[data-x=cancel]').addEventListener('click', closeModal);
+  ov.querySelector('form').addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var out = {}, form = ev.target;
+    opt.fields.forEach(function(fl){
+      var el = form.elements[fl.key];
+      out[fl.key] = (fl.type === 'checkbox') ? el.checked : el.value.trim();
+    });
+    opt.onSubmit(out);
+  });
+}
+function confirmModal(msg, onYes){
+  var ov = openModal('<h2>請確認</h2><p>'+esc(msg)+'</p>'+
+    '<div class="actions"><button class="btn" data-x="cancel">取消</button><button class="btn danger" data-x="yes">刪除</button></div>');
+  ov.querySelector('[data-x=cancel]').addEventListener('click', closeModal);
+  ov.querySelector('[data-x=yes]').addEventListener('click', function(){ closeModal(); onYes(); });
+}
+var toastTimer = null;
+function toast(msg, sticky){
+  var old = document.querySelector('.toast');
+  if (old) old.remove();
+  if (toastTimer) clearTimeout(toastTimer);
+  var t = document.createElement('div');
+  t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t);
+  if (!sticky) toastTimer = setTimeout(function(){ t.remove(); }, 3200);
+}
+
+/* ── 各單元畫面 ── */
+function toolsFor(kind, id){
+  if (!teacher) return '';
+  return '<span class="itemtools"><button class="btn small" data-act="edit-'+kind+'" data-id="'+id+'">✏️ 編輯</button>'+
+         '<button class="btn small danger" data-act="del-'+kind+'" data-id="'+id+'">刪除</button></span>';
+}
+function renderNews(){
+  var list = data.news.slice().sort(function(a,b){ return (b.pin?1:0)-(a.pin?1:0) || byDateDesc(a,b); });
+  var h = sectionHead('最新消息', ICON.news, 'news');
+  if (!list.length){ h += '<p class="empty">目前沒有新消息，休息一下吧～</p>'; return h; }
+  h += '<div class="card"><ul class="newslist">';
+  list.forEach(function(n){
+    h += '<li>'+(n.pin ? '<span class="pin">📌</span>' : '')+
+      '<button class="newstitle" data-act="show-news" data-id="'+n.id+'">'+esc(n.title)+'</button>'+
+      '<span class="hdate">'+fmtDate(n.date)+'</span>'+toolsFor('news', n.id)+'</li>';
+  });
+  h += '</ul></div>';
+  return h;
+}
+function showNews(item){
+  if (!item) return;
+  var ov = openModal('<div class="newsmodal"><h2>'+(item.pin?'📌 ':'')+esc(item.title)+'</h2>'+
+    '<span class="datebadge">'+fmtDate(item.date)+'</span>'+
+    '<div class="body">'+esc(item.body||'')+'</div>'+
+    '<div class="actions"><button class="btn primary" data-x="close">關閉</button></div></div>');
+  ov.querySelector('.modal').classList.add('wide');
+  ov.querySelector('[data-x=close]').addEventListener('click', closeModal);
+}
+function renderContact(){
+  var list = data.contact.slice().sort(byDateDesc);
+  var h = sectionHead('聯絡簿', ICON.contact, 'contact');
+  h += '<div class="contactwrap"><div class="contactmain">';
+  var shown = list;
+  if (selDate){
+    shown = list.filter(function(c){ return c.date === selDate; });
+    h += '<div class="filterbar">正在顯示 <strong>'+fmtDate(selDate)+'</strong> 的聯絡簿'+
+      '<button class="btn small" data-act="cal-all">顯示全部</button></div>';
+  }
+  if (!shown.length) h += '<p class="empty">'+(selDate?'這一天沒有聯絡簿內容喔！':'還沒有聯絡簿內容喔！')+'</p>';
+  shown.forEach(function(c){
+    h += '<article class="card"><div class="meta"><span class="datebadge">'+fmtDate(c.date)+'</span>'+
+      '<strong>今日功課</strong>'+toolsFor('contact', c.id)+'</div><ol class="hwlist">';
+    (c.hw||[]).forEach(function(item){ h += '<li>'+esc(item)+'</li>'; });
+    h += '</ol>';
+    if (c.note) h += '<div class="notebox"><strong>叮嚀：</strong>'+esc(c.note)+'</div>';
+    h += '</article>';
+  });
+  h += '</div>'+renderCalendar()+'</div>';
+  return h;
+}
+function renderCalendar(){
+  var has = {};
+  data.contact.forEach(function(c){ has[c.date] = true; });
+  var startDow = new Date(calY, calM, 1).getDay();
+  var daysIn = new Date(calY, calM + 1, 0).getDate();
+  var tod = today();
+  var h = '<aside class="calbox"><div class="calhead">'+
+    '<button class="btn small" data-act="cal-prev" aria-label="上個月">◀</button>'+
+    '<span>'+calY+'年'+(calM+1)+'月</span>'+
+    '<button class="btn small" data-act="cal-next" aria-label="下個月">▶</button></div>'+
+    '<div class="calgrid">';
+  '日一二三四五六'.split('').forEach(function(w){ h += '<span class="calw">'+w+'</span>'; });
+  for (var i=0; i<startDow; i++) h += '<span></span>';
+  for (var d=1; d<=daysIn; d++){
+    var ds = calY+'-'+('0'+(calM+1)).slice(-2)+'-'+('0'+d).slice(-2);
+    var cls = 'calday'+(ds===tod?' today':'')+(ds===selDate?' sel':'');
+    if (has[ds]) h += '<button class="'+cls+'" data-date="'+ds+'" aria-label="看'+fmtDate(ds)+'的聯絡簿">'+d+'</button>';
+    else h += '<span class="'+cls+'">'+d+'</span>';
+  }
+  h += '</div><p class="callegend"><span class="lk">15</span>＝有聯絡簿的日子，點一下就能看</p></aside>';
+  return h;
+}
+function honorDeed(o){
+  return o.deed || ((o.award||'') + (o.note ? '：'+o.note : ''));
+}
+function renderHonor(){
+  var list = data.honor.slice().sort(byDateDesc);
+  var h = sectionHead('榮譽榜', ICON.honor, 'honor');
+  if (!list.length){ h += '<p class="empty">榮譽榜虛位以待，大家加油！</p>'; return h; }
+  h += '<div class="card"><ul class="honorlist">';
+  list.forEach(function(o){
+    h += '<li>'+ICON.star+'<span class="who">'+esc(o.name)+'</span>'+
+      '<span class="deed">'+esc(honorDeed(o))+'</span>'+
+      '<span class="hdate">'+fmtDate(o.date)+'</span>'+toolsFor('honor', o.id)+'</li>';
+  });
+  h += '</ul></div>';
+  return h;
+}
+function shortLabel(lab){
+  lab = String(lab||'');
+  if (lab.indexOf('早')>=0) return '早';
+  var m = lab.match(/第(.)節/);
+  if (m){ var i = '一二三四五六七八九十'.indexOf(m[1]); if (i>=0) return String(i+1); }
+  if (lab.indexOf('午')>=0) return '午';
+  return lab.charAt(0);
+}
+function renderSchedWidget(){
+  var s = data.schedule;
+  var open = schedOpen || schedEdit;
+  var h = '<div class="schedmini'+(open?' open':'')+'">';
+  h += '<button class="minihead" data-act="sched-toggle" aria-expanded="'+(open?'true':'false')+'">'+
+    ICON.sched+'<span>404功課表</span></button>';
+  h += '<table class="mini"><tr><th></th>';
+  s.days.forEach(function(d){ h += '<th>'+esc(String(d).replace('週',''))+'</th>'; });
+  h += '</tr>';
+  s.rows.forEach(function(r){
+    h += '<tr><th>'+esc(shortLabel(r.label))+'</th>';
+    if (r.cells) r.cells.forEach(function(c){ h += '<td style="background:'+subjColor(c)+'">'+esc(c)+'</td>'; });
+    else h += '<td colspan="'+s.days.length+'" class="mdiv">'+esc(r.label)+'</td>';
+    h += '</tr>';
+  });
+  h += '</table><p class="minitip">滑鼠移過來（或點標題）可以放大</p>';
+  h += '<div class="schedpanel"><div class="schedtitle">'+ICON.sched+'<span>404功課表</span>'+
+    '<button class="btn small" data-act="sched-toggle" style="margin-left:auto" aria-label="關閉大課表">✕</button></div>';
+  var ce = schedEdit ? ' contenteditable="true"' : '';
+  h += '<div class="schedwrap"><table class="sched"><thead><tr><th class="corner">節次</th>';
+  s.days.forEach(function(d,i){ h += '<th'+(schedEdit?' contenteditable="true"':'')+' data-day="'+i+'">'+esc(d)+'</th>'; });
+  h += '</tr></thead><tbody>';
+  s.rows.forEach(function(r,ri){
+    if (!r.cells){
+      h += '<tr class="divider" data-row="'+ri+'"><td class="plabel"><span'+ce+' data-f="label">'+esc(r.label)+'</span>'+
+        '<small'+ce+' data-f="time">'+esc(r.time||'')+'</small></td>'+
+        '<td colspan="'+s.days.length+'"><span'+ce+' data-f="dividertext">'+esc(r.label)+'</span></td></tr>';
+      return;
+    }
+    h += '<tr data-row="'+ri+'"><td class="plabel"><span'+ce+' data-f="label">'+esc(r.label)+'</span>'+
+      '<small'+ce+' data-f="time">'+esc(r.time||'')+'</small></td>';
+    r.cells.forEach(function(cell,ci){
+      h += '<td'+ce+' data-col="'+ci+'" style="background:'+subjColor(cell)+'">'+esc(cell)+'</td>';
+    });
+    h += '</tr>';
+  });
+  h += '</tbody></table></div>';
+  if (teacher){
+    if (schedEdit){
+      h += '<div class="colorlist"><span class="collab">科目顏色（點色塊更換）：</span>';
+      uniqueSubjects().forEach(function(sub){
+        var col = subjColor(sub);
+        h += '<label class="colorchip" style="background:'+col+'">'+
+          '<input type="color" data-subj="'+esc(sub)+'" value="'+col+'" title="更換「'+esc(sub)+'」的顏色">'+esc(sub)+'</label>';
+      });
+      h += '</div>';
+    }
+    h += '<div class="schedtools">';
+    if (schedEdit){
+      h += '<button class="btn primary" data-act="sched-save">💾 儲存課表</button>'+
+           '<button class="btn" data-act="sched-cancel">取消</button>'+
+           '<span style="font-size:14px;color:#8a7a5c;align-self:center">直接點表格文字就可以修改</span>';
+    } else {
+      h += '<button class="btn primary" data-act="sched-edit">✏️ 編輯課表</button>';
+    }
+    h += '</div>';
+  }
+  h += '</div></div>';
+  return h;
+}
+function sectionHead(title, icon, addKind){
+  var h = '<div class="section-head">'+icon+'<span>'+esc(title)+'</span>';
+  if (teacher && addKind) h += '<button class="btn primary add" data-act="add-'+addKind+'">＋ 新增</button>';
+  return h+'</div>';
+}
+
+/* ── 整頁 ── */
+function render(){
+  var h = '';
+  if (teacher){
+    h += '<div class="teacherbar"><span class="tag">老師模式</span><span>更新內容會立刻讓所有人看到</span>'+
+      '<span class="spacer"></span>'+
+      '<button class="btn small" data-act="changepw">修改密碼</button>'+
+      '<button class="btn small" data-act="logout">登出</button></div>';
+  }
+  h += '<header class="banner">'+BANNER+
+    '<div class="title"><h1>民生國小 404 快樂窩</h1><div class="stars">☆★☆　快樂學習・天天開心　☆★☆</div></div></header>';
+  h += '<nav class="tabs">'+[
+      ['news','最新消息',ICON.news],['contact','聯絡簿',ICON.contact],
+      ['honor','榮譽榜',ICON.honor]
+    ].map(function(t){
+      return '<button class="tab'+(tab===t[0]?' active':'')+'" data-tab="'+t[0]+'" '+
+        (tab===t[0]?'aria-current="page" ':'')+'>'+t[2]+'<span>'+t[1]+'</span></button>';
+    }).join('')+'</nav>';
+  h += '<div class="pagegrid"><main>';
+  if (tab==='contact') h += renderContact();
+  else if (tab==='honor') h += renderHonor();
+  else h += renderNews();
+  h += '</main><aside class="sidebar">'+renderSchedWidget()+'</aside></div>';
+  h += '<footer><span>404快樂窩 · 我們的班級小天地</span><span class="spacer"></span>'+
+    (teacher ? '' : '<button class="keybtn" data-act="login">🔑 老師專區</button>')+'</footer>';
+  root.innerHTML = h;
+}
+
+/* ── 事件 ── */
+function findItem(arr, id){ for (var i=0;i<arr.length;i++){ if (arr[i].id===id) return arr[i]; } return null; }
+function removeItem(arr, id){ var i; for (i=0;i<arr.length;i++){ if (arr[i].id===id){ arr.splice(i,1); return; } } }
+
+function newsForm(item){
+  formModal({
+    title: item ? '編輯消息' : '新增消息',
+    fields: [
+      {key:'date', label:'日期', type:'date', value:item?item.date:today(), required:true},
+      {key:'title', label:'標題', type:'text', value:item?item.title:'', required:true},
+      {key:'body', label:'內容', type:'textarea', value:item?item.body:''},
+      {key:'pin', label:'📌 置頂這則消息', type:'checkbox', value:item?item.pin:false}
+    ],
+    onSubmit: function(v){
+      if (!v.title){ toast('標題不能空白喔'); return; }
+      if (item){ item.date=v.date; item.title=v.title; item.body=v.body; item.pin=v.pin; }
+      else data.news.push({id:uid(), date:v.date, title:v.title, body:v.body, pin:v.pin});
+      closeModal(); save('消息已發布！');
+    }
+  });
+}
+function contactForm(item){
+  formModal({
+    title: item ? '編輯聯絡簿' : '新增聯絡簿',
+    fields: [
+      {key:'date', label:'日期', type:'date', value:item?item.date:today(), required:true},
+      {key:'hw', label:'今日功課（一行一項）', type:'textarea', value:item?(item.hw||[]).join('\n'):'',
+        placeholder:'例如：\n國語習作 P.10～P.11\n數學課本 P.20'},
+      {key:'note', label:'叮嚀事項（可留空）', type:'textarea', value:item?item.note:''}
+    ],
+    onSubmit: function(v){
+      var hw = v.hw.split('\n').map(function(x){ return x.trim(); }).filter(Boolean);
+      if (!hw.length && !v.note){ toast('功課和叮嚀至少要填一項喔'); return; }
+      if (item){ item.date=v.date; item.hw=hw; item.note=v.note; }
+      else data.contact.push({id:uid(), date:v.date, hw:hw, note:v.note});
+      closeModal(); save('聯絡簿已更新！');
+    }
+  });
+}
+function honorForm(item){
+  formModal({
+    title: item ? '編輯榮譽榜' : '新增榮譽榜',
+    fields: [
+      {key:'name', label:'學生姓名', type:'text', value:item?item.name:'', required:true},
+      {key:'deed', label:'得獎事蹟', type:'text', value:item?honorDeed(item):'',
+        placeholder:'例如：模範生、國語文競賽第一名', required:true}
+    ],
+    onSubmit: function(v){
+      if (!v.name || !v.deed){ toast('姓名和得獎事蹟都要填喔'); return; }
+      if (item){ item.name=v.name; item.deed=v.deed; delete item.award; delete item.note; }
+      else data.honor.push({id:uid(), date:today(), name:v.name, deed:v.deed});
+      closeModal(); save('榮譽榜已更新！');
+    }
+  });
+}
+function loginForm(){
+  formModal({
+    title:'老師專區', submitLabel:'登入',
+    fields:[{key:'pw', label:'老師密碼', type:'password', required:true,
+      hint:'登入後才會出現編輯按鈕。實際的儲存權限只有網頁擁有者的帳號才有。'}],
+    onSubmit:function(v){
+      if (hash(v.pw) === data.pw){
+        teacher = true; teacherPw = v.pw;
+        try{ sessionStorage.setItem('t404','1'); sessionStorage.setItem('t404pw', v.pw); }catch(e){}
+        closeModal(); render(); toast('老師您好！現在可以編輯內容了。');
+      } else toast('密碼不對喔，再試一次。');
+    }
+  });
+}
+function changePwForm(){
+  formModal({
+    title:'修改老師密碼', submitLabel:'確定修改',
+    fields:[
+      {key:'p1', label:'新密碼', type:'password', required:true},
+      {key:'p2', label:'再輸入一次', type:'password', required:true}
+    ],
+    onSubmit:function(v){
+      if (v.p1.length < 4){ toast('密碼至少要 4 個字喔'); return; }
+      if (v.p1 !== v.p2){ toast('兩次輸入的密碼不一樣'); return; }
+      if (API_URL){
+        fetch(API_URL, {method:'POST', body: JSON.stringify({action:'setpw', pw: teacherPw, newPw: v.p1})})
+          .then(function(r){ return r.json(); })
+          .then(function(res){
+            if (res && res.ok){
+              teacherPw = v.p1;
+              try{ sessionStorage.setItem('t404pw', v.p1); }catch(e){}
+              data.pw = hash(v.p1);
+              closeModal(); save('密碼已更新！');
+            } else if (res && res.error === 'bad_pw'){ toast('目前密碼驗證失敗，請登出後重新登入再試。'); }
+            else { toast('修改失敗，請再試一次。'); }
+          })
+          .catch(function(){ toast('連不上資料伺服器，請稍後再試。'); });
+        return;
+      }
+      data.pw = hash(v.p1);
+      closeModal(); save('密碼已更新！');
+    }
+  });
+}
+function schedSave(){
+  var s = data.schedule;
+  document.querySelectorAll('.sched thead th[data-day]').forEach(function(th){
+    s.days[+th.dataset.day] = th.textContent.trim() || '　';
+  });
+  document.querySelectorAll('.sched tbody tr').forEach(function(tr){
+    var r = s.rows[+tr.dataset.row];
+    if (!r) return;
+    var lab = tr.querySelector('[data-f=label]'), tim = tr.querySelector('[data-f=time]');
+    if (lab) r.label = lab.textContent.trim() || '　';
+    if (tim) r.time = tim.textContent.trim();
+    if (r.cells){
+      tr.querySelectorAll('td[data-col]').forEach(function(td){
+        r.cells[+td.dataset.col] = td.textContent.trim();
+      });
+    } else {
+      var dt = tr.querySelector('[data-f=dividertext]');
+      if (dt) r.label = dt.textContent.trim() || r.label;
+    }
+  });
+  var colors = Object.assign({}, s.colors || {});
+  document.querySelectorAll('input[type=color][data-subj]').forEach(function(inp){
+    colors[inp.dataset.subj] = inp.value;
+  });
+  s.colors = colors;
+  schedEdit = false;
+  save('課表已更新！');
+}
+
+root.addEventListener('click', function(ev){
+  var tabBtn = ev.target.closest('[data-tab]');
+  if (tabBtn){ tab = tabBtn.dataset.tab; render(); return; }
+  var calDay = ev.target.closest('button.calday[data-date]');
+  if (calDay){ selDate = calDay.dataset.date; render(); return; }
+  var btn = ev.target.closest('[data-act]');
+  if (!btn) return;
+  var act = btn.dataset.act, id = btn.dataset.id;
+  if (act==='cal-all'){ selDate = null; render(); return; }
+  if (act==='cal-prev' || act==='cal-next'){
+    calM += (act==='cal-next') ? 1 : -1;
+    if (calM < 0){ calM = 11; calY--; }
+    if (calM > 11){ calM = 0; calY++; }
+    render(); return;
+  }
+  if (act==='login') loginForm();
+  else if (act==='logout'){ teacher=false; schedEdit=false; teacherPw='';
+    try{ sessionStorage.removeItem('t404'); sessionStorage.removeItem('t404pw'); }catch(e){} render(); }
+  else if (act==='changepw') changePwForm();
+  else if (act==='show-news') showNews(findItem(data.news,id));
+  else if (act==='add-news') newsForm(null);
+  else if (act==='edit-news') newsForm(findItem(data.news,id));
+  else if (act==='del-news') confirmModal('確定要刪除這則消息嗎？', function(){ removeItem(data.news,id); save('已刪除。'); });
+  else if (act==='add-contact') contactForm(null);
+  else if (act==='edit-contact') contactForm(findItem(data.contact,id));
+  else if (act==='del-contact') confirmModal('確定要刪除這天的聯絡簿嗎？', function(){ removeItem(data.contact,id); save('已刪除。'); });
+  else if (act==='add-honor') honorForm(null);
+  else if (act==='edit-honor') honorForm(findItem(data.honor,id));
+  else if (act==='del-honor') confirmModal('確定要刪除這筆榮譽紀錄嗎？', function(){ removeItem(data.honor,id); save('已刪除。'); });
+  else if (act==='sched-toggle'){ schedOpen=!schedOpen; if(!schedOpen) schedEdit=false; render(); }
+  else if (act==='sched-edit'){ schedEdit=true; schedOpen=true; render(); }
+  else if (act==='sched-cancel'){ schedEdit=false; render(); }
+  else if (act==='sched-save') schedSave();
+});
+root.addEventListener('input', function(ev){
+  var el = ev.target;
+  if (!el.matches || !el.matches('input[type=color][data-subj]')) return;
+  el.parentElement.style.background = el.value;
+  var sub = el.dataset.subj;
+  document.querySelectorAll('.sched td[data-col], table.mini td').forEach(function(td){
+    if (td.textContent.trim() === sub) td.style.background = el.value;
+  });
+});
+document.addEventListener('keydown', function(ev){ if (ev.key==='Escape') closeModal(); });
+
+render();
+try {
+  var flash = sessionStorage.getItem('t404flash');
+  if (flash){ sessionStorage.removeItem('t404flash'); toast(flash); }
+} catch(e){}
+if (API_URL){
+  fetch(API_URL)
+    .then(function(r){ return r.json(); })
+    .then(function(remote){
+      if (remote && remote.news && remote.schedule){
+        data = remote;
+        var latest = data.contact.slice().sort(byDateDesc)[0];
+        var d0 = latest ? new Date(latest.date+'T00:00:00') : new Date();
+        if (!isNaN(d0)){ calY = d0.getFullYear(); calM = d0.getMonth(); }
+        render();
+      }
+    })
+    .catch(function(){});
+}
+})();
+</script>
+
+</body>
+</html>
