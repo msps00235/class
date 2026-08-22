@@ -450,7 +450,8 @@ function renderNews(){
   list.forEach(function(n){
     h += '<li>'+(n.pin ? '<span class="pin">📌</span>' : '')+
       '<button class="newstitle" data-act="show-news" data-id="'+n.id+'">'+esc(n.title)+'</button>'+
-      (((n.links&&n.links.length)||(n.files&&n.files.length)) ? '<span class="hasattach" title="有附件或連結">📎</span>' : '')+
+      ((n.links&&n.links.length) ? '<span class="hasattach" title="有相關網址">🔗</span>' : '')+
+      ((n.files&&n.files.length) ? '<span class="hasattach" title="有附件">📎</span>' : '')+
       '<span class="hdate">'+fmtDate(n.date)+'</span>'+toolsFor('news', n.id)+'</li>';
   });
   h += '</ul></div>';
