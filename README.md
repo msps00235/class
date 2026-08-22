@@ -43,10 +43,10 @@ var API_URL = 'https://script.google.com/macros/s/AKfycb…/exec';
 
 ### 第三步：上架 GitHub Pages
 
-1. 在 GitHub（帳號 mspsmia）建立一個**公開**儲存庫，例如 `class-404`
+1. 在 GitHub（帳號 msps00235）建立一個**公開**儲存庫，例如 `class`
 2. 上傳本資料夾的 `index.html`（其他檔案可一併上傳當備份）
 3. 儲存庫 Settings → Pages → Branch 選 `main`、資料夾選 `/ (root)` → Save
-4. 約一分鐘後網址生效：`https://mspsmia.github.io/class-404/`
+4. 約一分鐘後網址生效：`https://msps00235.github.io/class/`
 
 ### 完成後
 
