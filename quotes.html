@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>格言管理</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0}
+:root{
+  --gold:#F6C21C; --stripe:#FFF3B0; --paper:#FFF8E1; --cream:#FFFDF0;
+  --green:#EAFAB9; --blue:#B0D8FF; --blue-line:#6699FF;
+  --ink:#4A3520; --navy:#1A2E8C; --red:#E8542A;
+  --font-hand:'LXGW WenKai TC','Noto Sans TC',sans-serif;
+  --font-body:'Noto Sans TC','LXGW WenKai TC',sans-serif;
+}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:17px;line-height:1.7}
+header{background:var(--gold);padding:14px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header h1{margin:0;font-family:var(--font-hand);font-size:26px;color:#000088}
+header .spacer{flex:1}
+main{max-width:760px;margin:0 auto;padding:20px 16px 60px}
+.card{background:var(--cream);border-top:2px dotted var(--blue-line);border-bottom:2px dotted var(--blue-line);
+  border-radius:14px;padding:16px 20px;margin-bottom:16px;box-shadow:0 2px 6px rgba(74,53,32,.08)}
+.btn{border:2px solid var(--ink);background:var(--cream);border-radius:12px;padding:4px 14px;font-size:15px;
+  cursor:pointer;box-shadow:1px 2px 0 rgba(74,53,32,.25);font-family:inherit;color:var(--ink);text-decoration:none;display:inline-block}
+.btn:hover{background:var(--stripe)}
+.btn:focus-visible{outline:3px solid var(--navy);outline-offset:2px}
+.btn.primary{background:var(--gold);font-weight:700}
+.btn.danger{background:#FFD6C9}
+.btn.small{padding:2px 10px;font-size:13px;border-radius:9px}
+input[type=password],textarea{width:100%;border:2px solid var(--ink);border-radius:10px;padding:8px 10px;
+  font-size:16px;font-family:inherit;background:#fff;color:var(--ink)}
+textarea{min-height:90px;resize:vertical}
+label{display:block;font-weight:700;font-size:15px;margin:0 0 6px}
+.hint{font-size:13px;color:#8a7a5c;margin:6px 0 0}
+ol.qlist{margin:0;padding-left:0;list-style:none;counter-reset:q}
+ol.qlist li{counter-increment:q;display:flex;gap:10px;align-items:baseline;padding:9px 2px;border-bottom:1px dashed #D9CBA3}
+ol.qlist li:last-child{border-bottom:none}
+ol.qlist li::before{content:counter(q);flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--blue);
+  border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.qtext{flex:1;min-width:0;word-break:break-word}
+.qtools{display:flex;gap:6px;flex:0 0 auto}
+.count{background:var(--green);border:2px solid var(--ink);border-radius:999px;padding:1px 12px;font-size:14px;font-weight:700}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--ink);color:var(--cream);
+  border-radius:999px;padding:8px 22px;font-size:15px;z-index:60}
+.editrow{flex:1;display:flex;flex-direction:column;gap:8px}
+.editrow .actions{display:flex;gap:8px;justify-content:flex-end}
+</style>
+</head>
+<body>
+<header>
+  <h1>💬 格言管理</h1>
+  <span class="spacer"></span>
+  <a class="btn small" href="./">← 回班級網頁</a>
+</header>
+<main id="main"><p>載入中…</p></main>
+<script>
+(function(){
+'use strict';
+var API_URL = 'https://script.google.com/macros/s/AKfycbzgHIt0SkgZIDHavubHl9QoMYvRgMgkFrSGhN_OVbdn3OM_dlG9wlznBzmn5WovWND1/exec';
+var SITE_ID = '115-404';
+var DEFAULT_QUOTES = [
+"所有的幸運，都是努力埋下的伏筆。",
+"好運藏在努力之中，機會是給準備好的人。",
+"熬過不能選擇的階段，才能選擇自己想要的未來。",
+"認真學習，記住的變知識，記不住的變氣質。",
+"We choose something to do not because it is easy, but because it is hard.",
+"達成夢想與目標的唯一方法，就是累積微不足道的小事。",
+"如果要在正確與善良之間做出選擇，請選擇善良。When given the choice between being right or being kind, choose kind.",
+"聰明是天賦，善良是選擇。Cleverness is a gift, kindness is a choice.",
+"欣賞是一件很棒的事；它讓別人的優點也能成為我們的。",
+"世上沒有絕望的處境，只有對處境絕望的人。",
+"發脾氣是無能的表現。",
+"做家事是對家庭的一種貢獻，應該由家庭成員共同承擔。",
+"別人對你的見解，來自於你平日的言行舉止。",
+"當你真心渴望某樣東西時，整個宇宙都會聯合起來幫助你。",
+"克服困難，不要被困難克服。",
+"自律的人最自由。",
+"知足的人最快樂。",
+"每個人都有許多夢想，若其中一個一直攪擾著你，那阻礙你達成的就剩行動了。",
+"不要小看自己，因為人有無限的可能。",
+"難行能行，難為能為，才能昇華自我的人格。",
+"面容動作，言談舉止，都是日常生活中修養忍辱得來的。",
+"退一步、讓一步、來成全別人，即是修養。",
+"待人退一步，愛人寬一寸，在人生道上就會活得很快樂。",
+"別讓昨日的不幸阻礙今天的自己，重拾信心才能成就美好的明天。",
+"勿以善小而不為，勿以惡小而為之。",
+"靜坐常思己過，閒談莫論人非。",
+"改變別人，不如先改變自己。",
+"忍一時之氣，免百日之憂。",
+"無心去往壞處想，聽任何話都是好話。",
+"笑容，不但可以表達善意，還可以縮短人際間的距離。",
+"紛亂的心田，開不出智慧的花朵。",
+"人的心念意境，如能保持開朗清明，則所見，都是美而善的。",
+"「禍從口出」，一個人最大的敵人就是他的口舌。",
+"理直氣要和，得理要饒人。",
+"信心、毅力、勇氣三者具備，則天下沒有做不成的事。",
+"時時存好心，日日是好日。",
+"為人處事要小心，細心，但不要小心眼。",
+"人生多一份感恩，就多一份美化。",
+"恆心就如滴水穿石，再大的困難與阻礙也能衝破。",
+"生而為人，就要在人際關係中具有積極正向的意義，為人付出，創造自己的價值。",
+"稻穗結得越飽滿，越往下垂；一個人越有成就，越有謙沖的胸襟。",
+"如果你覺得周遭的人都溫和善良，有很大的可能是你也是這樣的人。",
+"世上沒有什麼徒勞無功的小事，只是看你有沒有本事做大而已。",
+"禮，是規矩的態度；義，是正當的行為；廉，是清白的辨別；恥，是切實的覺悟。",
+"待人退一步，愛人寬一步，在人生道中就會活得很快樂。",
+"把握當下，就是用心。",
+"己所不欲，勿施於人。"
+];
+
+var data = null, pw = '', editIdx = -1;
+try { pw = sessionStorage.getItem('t404pw') || ''; } catch(e){}
+var main = document.getElementById('main');
+
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function hash(s){ var h=5381,i; for(i=0;i<s.length;i++){ h=((h<<5)+h+s.charCodeAt(i))>>>0; } return h.toString(36); }
+var toastTimer=null;
+function toast(msg){
+  var old=document.querySelector('.toast'); if(old) old.remove();
+  if(toastTimer) clearTimeout(toastTimer);
+  var t=document.createElement('div'); t.className='toast'; t.textContent=msg;
+  document.body.appendChild(t);
+  toastTimer=setTimeout(function(){ t.remove(); }, 3200);
+}
+function loggedIn(){ return !!(pw && data && hash(pw) === data.pw); }
+
+function saveAll(msg){
+  toast('儲存中…');
+  fetch(API_URL, {method:'POST', body: JSON.stringify({action:'save', site: SITE_ID, pw: pw, data: data})})
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      if (res && res.ok){ toast(msg || '已儲存！'); render(); }
+      else if (res && res.error === 'bad_pw'){ pw=''; try{sessionStorage.removeItem('t404pw');}catch(e){} toast('密碼驗證失敗，請重新登入。'); render(); }
+      else toast('儲存失敗，請再試一次。');
+    })
+    .catch(function(){ toast('連不上資料伺服器，請稍後再試。'); });
+}
+
+function render(){
+  if (!data){
+    main.innerHTML = '<div class="card"><p>還讀不到班級資料。請先打開班級網頁、登入並儲存一次內容後，再回到這裡。</p></div>';
+    return;
+  }
+  if (!loggedIn()){
+    main.innerHTML =
+      '<div class="card"><label for="pwin">老師密碼</label>'+
+      '<input type="password" id="pwin" autocomplete="current-password">'+
+      '<p class="hint">登入後才能管理格言。格言會顯示在班級網頁橫幅下方，每次打開隨機一句。</p>'+
+      '<p style="text-align:right;margin:12px 0 0"><button class="btn primary" id="loginbtn">登入</button></p></div>';
+    document.getElementById('loginbtn').addEventListener('click', doLogin);
+    document.getElementById('pwin').addEventListener('keydown', function(ev){ if(ev.key==='Enter') doLogin(); });
+    return;
+  }
+  var h = '<div class="card"><label for="addbox">新增格言（一行一句，可一次貼很多句）</label>'+
+    '<textarea id="addbox"></textarea>'+
+    '<p style="text-align:right;margin:10px 0 0"><button class="btn primary" id="addbtn">＋ 加入並儲存</button></p></div>';
+  h += '<div class="card"><p style="margin:0 0 10px"><span class="count">目前共 '+data.quotes.length+' 句</span></p><ol class="qlist">';
+  data.quotes.forEach(function(q, i){
+    if (i === editIdx){
+      h += '<li><span class="editrow"><textarea id="editbox">'+esc(q)+'</textarea>'+
+        '<span class="actions"><button class="btn small" data-x="cancel">取消</button>'+
+        '<button class="btn small primary" data-x="saveedit" data-i="'+i+'">保存</button></span></span></li>';
+    } else {
+      h += '<li><span class="qtext">'+esc(q)+'</span><span class="qtools">'+
+        '<button class="btn small" data-x="edit" data-i="'+i+'">✏️</button>'+
+        '<button class="btn small danger" data-x="del" data-i="'+i+'">刪除</button></span></li>';
+    }
+  });
+  h += '</ol></div>';
+  main.innerHTML = h;
+  document.getElementById('addbtn').addEventListener('click', function(){
+    var lines = document.getElementById('addbox').value.split('\n')
+      .map(function(x){ return x.trim(); }).filter(Boolean);
+    if (!lines.length){ toast('請先輸入格言'); return; }
+    lines.forEach(function(q){ if (data.quotes.indexOf(q) < 0) data.quotes.push(q); });
+    saveAll('已加入 '+lines.length+' 句！');
+  });
+}
+
+function doLogin(){
+  var v = document.getElementById('pwin').value;
+  if (hash(v) === data.pw){
+    pw = v;
+    try{ sessionStorage.setItem('t404pw', v); sessionStorage.setItem('t404','1'); }catch(e){}
+    if (!data.quotes.length && DEFAULT_QUOTES.length){
+      data.quotes = DEFAULT_QUOTES.slice();
+      saveAll('已將 '+DEFAULT_QUOTES.length+' 句預設格言存入資料庫！');
+    } else render();
+  } else toast('密碼不對喔，再試一次。');
+}
+
+main.addEventListener('click', function(ev){
+  var btn = ev.target.closest('[data-x]');
+  if (!btn) return;
+  var x = btn.dataset.x, i = +btn.dataset.i;
+  if (x === 'edit'){ editIdx = i; render(); }
+  else if (x === 'cancel'){ editIdx = -1; render(); }
+  else if (x === 'saveedit'){
+    var v = document.getElementById('editbox').value.trim();
+    if (!v){ toast('內容不能空白'); return; }
+    data.quotes[i] = v; editIdx = -1;
+    saveAll('已修改！');
+  }
+  else if (x === 'del'){
+    if (window.confirm('確定要刪除這句格言嗎？\n\n' + data.quotes[i])){
+      data.quotes.splice(i, 1);
+      saveAll('已刪除。');
+    }
+  }
+});
+
+fetch(API_URL + '?site=' + encodeURIComponent(SITE_ID))
+  .then(function(r){ return r.json(); })
+  .then(function(remote){
+    data = remote;
+    if (data && !data.quotes) data.quotes = [];
+    if (data && loggedIn() && !data.quotes.length && DEFAULT_QUOTES.length){
+      data.quotes = DEFAULT_QUOTES.slice();
+      saveAll('已將 '+DEFAULT_QUOTES.length+' 句預設格言存入資料庫！');
+      return;
+    }
+    render();
+  })
+  .catch(function(){ data = null; render(); });
+})();
+</script>
+</body>
+</html>
