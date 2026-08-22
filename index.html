@@ -241,12 +241,7 @@ var teacher = false, tab = 'news', schedEdit = false, schedOpen = false, teacher
 try { teacher = sessionStorage.getItem('t404') === '1'; } catch(e){}
 try { teacherPw = sessionStorage.getItem('t404pw') || ''; } catch(e){}
 var selDate = null;
-var calInit = (function(){
-  var latest = data.contact.slice().sort(byDateDesc)[0];
-  var d = latest ? new Date(latest.date+'T00:00:00') : new Date();
-  if (isNaN(d)) d = new Date();
-  return d;
-})();
+var calInit = new Date();
 var calY = calInit.getFullYear(), calM = calInit.getMonth();
 
 /* ── 工具 ── */
@@ -449,7 +444,7 @@ function toolsFor(kind, id){
          '<button class="btn small danger" data-act="del-'+kind+'" data-id="'+id+'">刪除</button></span>';
 }
 function renderNews(){
-  var list = data.news.slice().sort(function(a,b){ return (b.pin?1:0)-(a.pin?1:0) || byDateDesc(a,b); });
+  var list = data.news.slice().reverse().sort(function(a,b){ return (b.pin?1:0)-(a.pin?1:0) || byDateDesc(a,b); });
   var h = sectionHead('最新消息', ICON.news, 'news');
   if (!list.length){ h += '<p class="empty">目前沒有新消息，休息一下吧～</p>'; return h; }
   h += '<div class="card"><ul class="newslist">';
@@ -478,16 +473,20 @@ function showNews(item){
   ov.querySelector('[data-x=close]').addEventListener('click', closeModal);
 }
 function renderContact(){
-  var list = data.contact.slice().sort(byDateDesc);
+  var list = data.contact.slice().reverse().sort(byDateDesc);
   var h = sectionHead('聯絡簿', ICON.contact, 'contact');
   h += '<div class="contactwrap"><div class="contactmain">';
-  var shown = list;
-  if (selDate){
-    shown = list.filter(function(c){ return c.date === selDate; });
+  var tod = today();
+  var day = selDate || tod;
+  var shown = list.filter(function(c){ return c.date === day; });
+  if (selDate && selDate !== tod){
     h += '<div class="filterbar">正在顯示 <strong>'+fmtDate(selDate)+'</strong> 的聯絡簿'+
-      '<button class="btn small" data-act="cal-all">顯示全部</button></div>';
+      '<button class="btn small" data-act="cal-all">回到今天</button></div>';
   }
-  if (!shown.length) h += '<p class="empty">'+(selDate?'這一天沒有聯絡簿內容喔！':'還沒有聯絡簿內容喔！')+'</p>';
+  if (!shown.length){
+    h += '<p class="empty">'+fmtDate(day)+'<br>'+
+      (day===tod ? '今日聯絡簿尚未公佈' : '這一天沒有聯絡簿內容喔！')+'</p>';
+  }
   shown.forEach(function(c){
     h += '<article class="card"><div class="meta"><span class="datebadge">'+fmtDate(c.date)+'</span>'+
       '<strong>今日功課</strong>'+toolsFor('contact', c.id)+'</div><ol class="hwlist">';
@@ -527,7 +526,7 @@ function honorText(o){
   return (o.name ? o.name + '　' : '') + deed;
 }
 function renderHonor(){
-  var list = data.honor.slice().sort(byDateDesc);
+  var list = data.honor.slice().reverse().sort(byDateDesc);
   var h = sectionHead('榮譽榜', ICON.honor, 'honor');
   if (!list.length){ h += '<p class="empty">榮譽榜虛位以待，大家加油！</p>'; return h; }
   h += '<div class="card"><ul class="honorlist">';
@@ -964,9 +963,6 @@ if (API_URL){
         data = remote;
         ensureDefaults();
         quoteIdx = Math.floor(Math.random() * Math.max(1, data.quotes.length));
-        var latest = data.contact.slice().sort(byDateDesc)[0];
-        var d0 = latest ? new Date(latest.date+'T00:00:00') : new Date();
-        if (!isNaN(d0)){ calY = d0.getFullYear(); calM = d0.getMonth(); }
         render();
       }
     })
