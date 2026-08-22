@@ -755,13 +755,14 @@ function honorForm(item){
   formModal({
     title: item ? '編輯榮譽榜' : '新增榮譽榜',
     fields: [
+      {key:'date', label:'日期', type:'date', value:item?item.date:today(), required:true},
       {key:'t', label:'榮譽內容（姓名和事蹟直接一起打）', type:'text', value:item?honorText(item):'',
         placeholder:'例如：王小明　模範生', required:true}
     ],
     onSubmit: function(v){
       if (!v.t){ toast('內容不能空白喔'); return; }
-      if (item){ item.text=v.t; delete item.name; delete item.deed; delete item.award; delete item.note; }
-      else data.honor.push({id:uid(), date:today(), text:v.t});
+      if (item){ item.date=v.date; item.text=v.t; delete item.name; delete item.deed; delete item.award; delete item.note; }
+      else data.honor.push({id:uid(), date:v.date, text:v.t});
       closeModal(); save('榮譽榜已更新！');
     }
   });
