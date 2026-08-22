@@ -60,7 +60,12 @@ a.btn{text-decoration:none;display:inline-block;color:var(--ink)}
 .tab[data-tab="contact"].active{background:var(--green)}
 .tab[data-tab="honor"].active{background:var(--pink)}
 .tab[data-tab="sched"].active{background:var(--stripe)}
-@media (max-width:640px){.tabs{gap:8px}.tab{font-size:17px;padding:7px 14px}}
+@media (max-width:640px){
+  .tabs{gap:8px;flex-wrap:nowrap}
+  .tab{flex:1;justify-content:center;font-size:15px;padding:7px 4px;gap:4px}
+  .tab svg{width:18px;height:18px;flex:0 0 auto}
+  .tab span{white-space:nowrap}
+}
 
 /* ── 內容區 ── */
 .pagegrid{max-width:1120px;margin:0 auto;padding:0 16px;display:flex;gap:20px;align-items:flex-start}
