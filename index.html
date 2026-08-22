@@ -214,7 +214,10 @@ footer .spacer{flex:1}
 'use strict';
 // ▼ 部署 Google Apps Script 後，把「網頁應用程式」網址貼在下面的引號中
 var API_URL = 'https://script.google.com/macros/s/AKfycbzgHIt0SkgZIDHavubHl9QoMYvRgMgkFrSGhN_OVbdn3OM_dlG9wlznBzmn5WovWND1/exec';
+// ▼ 學年代號：每個學年/班級一個，資料各自獨立（例：'115-404'）
+var SITE_ID = '115-404';
 var data = JSON.parse(document.getElementById('page-data').textContent);
+if (!data.site) data.site = { title:'民生國小 404 快樂窩', sched:'404功課表' };
 var root = document.getElementById('root');
 var teacher = false, tab = 'news', schedEdit = false, schedOpen = false, teacherPw = '';
 try { teacher = sessionStorage.getItem('t404') === '1'; } catch(e){}
@@ -326,7 +329,7 @@ function save(flash){
   toast('儲存中…', true);
   if (API_URL){
     render();
-    fetch(API_URL, {method:'POST', body: JSON.stringify({action:'save', pw: teacherPw, data: data})})
+    fetch(API_URL, {method:'POST', body: JSON.stringify({action:'save', site: SITE_ID, pw: teacherPw, data: data})})
       .then(function(r){ return r.json(); })
       .then(function(res){
         saving = false;
@@ -512,7 +515,7 @@ function renderSchedWidget(){
   var open = schedOpen || schedEdit;
   var h = '<div class="schedmini'+(open?' open':'')+'">';
   h += '<button class="minihead" data-act="sched-toggle" aria-expanded="'+(open?'true':'false')+'">'+
-    ICON.sched+'<span>404功課表</span></button>';
+    ICON.sched+'<span>'+esc(data.site.sched)+'</span></button>';
   h += '<table class="mini"><tr><th></th>';
   s.days.forEach(function(d){ h += '<th>'+esc(String(d).replace('週',''))+'</th>'; });
   h += '</tr>';
@@ -523,7 +526,7 @@ function renderSchedWidget(){
     h += '</tr>';
   });
   h += '</table><p class="minitip">滑鼠移過來（或點標題）可以放大</p>';
-  h += '<div class="schedpanel"><div class="schedtitle">'+ICON.sched+'<span>404功課表</span>'+
+  h += '<div class="schedpanel"><div class="schedtitle">'+ICON.sched+'<span>'+esc(data.site.sched)+'</span>'+
     '<button class="btn small" data-act="sched-toggle" style="margin-left:auto" aria-label="關閉大課表">✕</button></div>';
   var ce = schedEdit ? ' contenteditable="true"' : '';
   h += '<div class="schedwrap"><table class="sched"><thead><tr><th class="corner">節次</th>';
@@ -579,11 +582,13 @@ function render(){
   if (teacher){
     h += '<div class="teacherbar"><span class="tag">老師模式</span><span>更新內容會立刻讓所有人看到</span>'+
       '<span class="spacer"></span>'+
+      '<button class="btn small" data-act="sitecfg">網站設定</button>'+
       '<button class="btn small" data-act="changepw">修改密碼</button>'+
       '<button class="btn small" data-act="logout">登出</button></div>';
   }
+  document.title = data.site.title || '班級網頁';
   h += '<header class="banner">'+BANNER+
-    '<div class="title"><h1>民生國小 404 快樂窩</h1><div class="stars">☆★☆　快樂學習・天天開心　☆★☆</div></div></header>';
+    '<div class="title"><h1>'+esc(data.site.title)+'</h1><div class="stars">☆★☆　快樂學習・天天開心　☆★☆</div></div></header>';
   h += '<nav class="tabs">'+[
       ['news','最新消息',ICON.news],['contact','聯絡簿',ICON.contact],
       ['honor','榮譽榜',ICON.honor]
@@ -656,6 +661,20 @@ function honorForm(item){
     }
   });
 }
+function siteForm(){
+  formModal({
+    title:'網站設定', submitLabel:'儲存',
+    fields:[
+      {key:'title', label:'班級網頁標題（橫幅大字）', type:'text', value:data.site.title, required:true},
+      {key:'sched', label:'功課表小標', type:'text', value:data.site.sched, required:true}
+    ],
+    onSubmit:function(v){
+      if (!v.title || !v.sched){ toast('兩個欄位都要填喔'); return; }
+      data.site.title = v.title; data.site.sched = v.sched;
+      closeModal(); save('網站設定已更新！');
+    }
+  });
+}
 function loginForm(){
   formModal({
     title:'老師專區', submitLabel:'登入',
@@ -681,7 +700,7 @@ function changePwForm(){
       if (v.p1.length < 4){ toast('密碼至少要 4 個字喔'); return; }
       if (v.p1 !== v.p2){ toast('兩次輸入的密碼不一樣'); return; }
       if (API_URL){
-        fetch(API_URL, {method:'POST', body: JSON.stringify({action:'setpw', pw: teacherPw, newPw: v.p1})})
+        fetch(API_URL, {method:'POST', body: JSON.stringify({action:'setpw', site: SITE_ID, pw: teacherPw, newPw: v.p1})})
           .then(function(r){ return r.json(); })
           .then(function(res){
             if (res && res.ok){
@@ -747,6 +766,7 @@ root.addEventListener('click', function(ev){
   if (act==='login') loginForm();
   else if (act==='logout'){ teacher=false; schedEdit=false; teacherPw='';
     try{ sessionStorage.removeItem('t404'); sessionStorage.removeItem('t404pw'); }catch(e){} render(); }
+  else if (act==='sitecfg') siteForm();
   else if (act==='changepw') changePwForm();
   else if (act==='show-news') showNews(findItem(data.news,id));
   else if (act==='add-news') newsForm(null);
@@ -780,11 +800,12 @@ try {
   if (flash){ sessionStorage.removeItem('t404flash'); toast(flash); }
 } catch(e){}
 if (API_URL){
-  fetch(API_URL)
+  fetch(API_URL + '?site=' + encodeURIComponent(SITE_ID))
     .then(function(r){ return r.json(); })
     .then(function(remote){
       if (remote && remote.news && remote.schedule){
         data = remote;
+        if (!data.site) data.site = { title:'民生國小 404 快樂窩', sched:'404功課表' };
         var latest = data.contact.slice().sort(byDateDesc)[0];
         var d0 = latest ? new Date(latest.date+'T00:00:00') : new Date();
         if (!isNaN(d0)){ calY = d0.getFullYear(); calM = d0.getMonth(); }
