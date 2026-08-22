@@ -612,9 +612,10 @@ function render(){
       '<button class="btn small" data-act="changepw">修改密碼</button>'+
       '<button class="btn small" data-act="logout">登出</button></div>';
   }
-  document.title = data.site.title || '班級網頁';
+  var siteTitle = (loaded && !loadError) ? data.site.title : '';
+  document.title = siteTitle || '班級網頁';
   h += '<header class="banner">'+BANNER+
-    '<div class="title"><h1>'+esc(data.site.title)+'</h1></div></header>';
+    (siteTitle ? '<div class="title"><h1>'+esc(siteTitle)+'</h1></div>' : '')+'</header>';
   if (data.quotes.length){
     h += '<div class="quotebar">💬<span id="quotetext">'+esc(data.quotes[quoteIdx % data.quotes.length])+'</span>'+
       '<button class="btn small" data-act="quote-next" title="換一句" aria-label="換一句格言">↻</button></div>';
@@ -633,7 +634,7 @@ function render(){
   else if (tab==='honor') h += renderHonor();
   else h += renderNews();
   h += '</main><aside class="sidebar">'+((loaded && !loadError) ? renderSchedWidget() : '')+'</aside></div>';
-  h += '<footer><span>'+esc(data.site.title)+' · 我們的班級小天地</span><span class="spacer"></span>'+
+  h += '<footer><span>'+(siteTitle ? esc(siteTitle)+' · 我們的班級小天地' : '')+'</span><span class="spacer"></span>'+
     (teacher ? '' : '<button class="keybtn" data-act="login">🔑 老師專區</button>')+'</footer>';
   root.innerHTML = h;
 }
