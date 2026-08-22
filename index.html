@@ -151,6 +151,12 @@ table.sched{border-collapse:separate;border-spacing:4px;width:100%;min-width:620
   padding:2px 10px 2px 4px;font-size:14px;font-weight:700;cursor:pointer}
 .colorchip input[type=color]{width:22px;height:22px;border:1.5px solid var(--ink);border-radius:50%;
   padding:0;background:none;cursor:pointer}
+.colorchip.picked{outline:3px solid var(--red);outline-offset:1px}
+.chipname{background:none;border:none;font:inherit;font-weight:700;cursor:pointer;padding:0;color:var(--ink)}
+.chipname:hover{color:var(--red)}
+.chipname:focus-visible,.chipdel:focus-visible{outline:2px solid var(--navy);outline-offset:1px}
+.chipdel{background:none;border:none;cursor:pointer;font-size:12px;padding:0 2px;color:#8a7a5c}
+.chipdel:hover{color:var(--red)}
 .schedmini{position:relative;background:var(--cream);border-top:2px dotted var(--blue-line);border-bottom:2px dotted var(--blue-line);
   border-radius:14px;padding:10px 10px 12px;box-shadow:0 2px 6px rgba(74,53,32,.08)}
 .minihead{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;background:var(--green);
@@ -217,9 +223,9 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbzgHIt0SkgZIDHavubHl9QoMY
 // ▼ 學年代號：每個學年/班級一個，資料各自獨立（例：'115-404'）
 var SITE_ID = '115-404';
 var data = JSON.parse(document.getElementById('page-data').textContent);
-if (!data.site) data.site = { title:'民生國小 404 快樂窩', sched:'404功課表' };
+ensureDefaults();
 var root = document.getElementById('root');
-var teacher = false, tab = 'news', schedEdit = false, schedOpen = false, teacherPw = '';
+var teacher = false, tab = 'news', schedEdit = false, schedOpen = false, teacherPw = '', selectedSubj = '';
 try { teacher = sessionStorage.getItem('t404') === '1'; } catch(e){}
 try { teacherPw = sessionStorage.getItem('t404pw') || ''; } catch(e){}
 var selDate = null;
@@ -268,6 +274,11 @@ function uniqueSubjects(){
     });
   });
   return out;
+}
+function ensureDefaults(){
+  if (!data.site) data.site = { title:'民生國小 404 快樂窩', sched:'404功課表' };
+  if (!data.schedule.colors) data.schedule.colors = {};
+  if (!data.schedule.subjects || !data.schedule.subjects.length) data.schedule.subjects = uniqueSubjects();
 }
 
 var ICON = {
@@ -502,6 +513,18 @@ function renderHonor(){
   h += '</ul></div>';
   return h;
 }
+function subjChipHtml(sub){
+  var col = subjColor(sub);
+  return '<span class="colorchip" data-chip="'+esc(sub)+'" style="background:'+col+'">'+
+    '<input type="color" data-subj="'+esc(sub)+'" value="'+col+'" title="更換「'+esc(sub)+'」的顏色">'+
+    '<button class="chipname" data-act="subj-pick" data-n="'+esc(sub)+'">'+esc(sub)+'</button>'+
+    '<button class="chipdel" data-act="subj-del" data-n="'+esc(sub)+'" title="從清單移除">✕</button></span>';
+}
+function liveColor(name){
+  var inps = document.querySelectorAll('#subjlist input[data-subj]');
+  for (var i=0;i<inps.length;i++){ if (inps[i].dataset.subj === name) return inps[i].value; }
+  return subjColor(name);
+}
 function shortLabel(lab){
   lab = String(lab||'');
   if (lab.indexOf('早')>=0) return '早';
@@ -549,13 +572,10 @@ function renderSchedWidget(){
   h += '</tbody></table></div>';
   if (teacher){
     if (schedEdit){
-      h += '<div class="colorlist"><span class="collab">科目顏色（點色塊更換）：</span>';
-      uniqueSubjects().forEach(function(sub){
-        var col = subjColor(sub);
-        h += '<label class="colorchip" style="background:'+col+'">'+
-          '<input type="color" data-subj="'+esc(sub)+'" value="'+col+'" title="更換「'+esc(sub)+'」的顏色">'+esc(sub)+'</label>';
-      });
-      h += '</div>';
+      h += '<div class="colorlist" id="subjlist"><span class="collab">科目：點名稱選取後，點課表格子快速填入｜點色塊換顏色｜✕ 從清單移除</span>';
+      data.schedule.subjects.forEach(function(sub){ h += subjChipHtml(sub); });
+      h += '<span class="colorchip" data-chip="—"><button class="chipname" data-act="subj-pick" data-n="—">—（空堂）</button></span>';
+      h += '<button class="btn small" data-act="subj-add">＋新增科目</button></div>';
     }
     h += '<div class="schedtools">';
     if (schedEdit){
@@ -745,6 +765,7 @@ function schedSave(){
   });
   s.colors = colors;
   schedEdit = false;
+  selectedSubj = '';
   save('課表已更新！');
 }
 
@@ -753,6 +774,14 @@ root.addEventListener('click', function(ev){
   if (tabBtn){ tab = tabBtn.dataset.tab; render(); return; }
   var calDay = ev.target.closest('button.calday[data-date]');
   if (calDay){ selDate = calDay.dataset.date; render(); return; }
+  if (schedEdit && selectedSubj){
+    var cell = ev.target.closest('.sched td[data-col]');
+    if (cell){
+      cell.textContent = selectedSubj;
+      cell.style.background = (selectedSubj === '—') ? '#F5F0DF' : liveColor(selectedSubj);
+      return;
+    }
+  }
   var btn = ev.target.closest('[data-act]');
   if (!btn) return;
   var act = btn.dataset.act, id = btn.dataset.id;
@@ -778,9 +807,44 @@ root.addEventListener('click', function(ev){
   else if (act==='add-honor') honorForm(null);
   else if (act==='edit-honor') honorForm(findItem(data.honor,id));
   else if (act==='del-honor') confirmModal('確定要刪除這筆榮譽紀錄嗎？', function(){ removeItem(data.honor,id); save('已刪除。'); });
+  else if (act==='subj-pick'){
+    var pn = btn.dataset.n;
+    selectedSubj = (selectedSubj === pn) ? '' : pn;
+    document.querySelectorAll('#subjlist .colorchip').forEach(function(ch){
+      ch.classList.toggle('picked', ch.dataset.chip === selectedSubj);
+    });
+  }
+  else if (act==='subj-del'){
+    var dn = btn.dataset.n;
+    var arr = data.schedule.subjects, ix = arr.indexOf(dn);
+    if (ix >= 0) arr.splice(ix, 1);
+    if (selectedSubj === dn) selectedSubj = '';
+    var chip = btn.closest('.colorchip'); if (chip) chip.remove();
+  }
+  else if (act==='subj-add'){
+    formModal({
+      title:'新增科目', submitLabel:'加入',
+      fields:[
+        {key:'n', label:'科目名稱', type:'text', required:true, placeholder:'例如：書法、閩南語、Ｅ化創客'},
+        {key:'c', label:'顏色', type:'color', value:'#F5F0DF'}
+      ],
+      onSubmit:function(v){
+        if (!v.n){ toast('請輸入科目名稱'); return; }
+        var isNew = data.schedule.subjects.indexOf(v.n) < 0;
+        if (isNew) data.schedule.subjects.push(v.n);
+        data.schedule.colors[v.n] = v.c;
+        if (isNew){
+          var addBtn = document.querySelector('[data-act=subj-add]');
+          if (addBtn) addBtn.insertAdjacentHTML('beforebegin', subjChipHtml(v.n));
+        }
+        closeModal();
+        toast('已加入「'+v.n+'」，記得按「儲存課表」才會保存。');
+      }
+    });
+  }
   else if (act==='sched-toggle'){ schedOpen=!schedOpen; if(!schedOpen) schedEdit=false; render(); }
-  else if (act==='sched-edit'){ schedEdit=true; schedOpen=true; render(); }
-  else if (act==='sched-cancel'){ schedEdit=false; render(); }
+  else if (act==='sched-edit'){ schedEdit=true; schedOpen=true; selectedSubj=''; render(); }
+  else if (act==='sched-cancel'){ schedEdit=false; selectedSubj=''; render(); }
   else if (act==='sched-save') schedSave();
 });
 root.addEventListener('input', function(ev){
@@ -805,7 +869,7 @@ if (API_URL){
     .then(function(remote){
       if (remote && remote.news && remote.schedule){
         data = remote;
-        if (!data.site) data.site = { title:'民生國小 404 快樂窩', sched:'404功課表' };
+        ensureDefaults();
         var latest = data.contact.slice().sort(byDateDesc)[0];
         var d0 = latest ? new Date(latest.date+'T00:00:00') : new Date();
         if (!isNaN(d0)){ calY = d0.getFullYear(); calM = d0.getMonth(); }
