@@ -102,6 +102,10 @@ main{flex:1;min-width:0;padding:20px 0 48px}
 .newstitle:focus-visible{outline:3px solid var(--navy);outline-offset:2px}
 .modal.wide{max-width:640px}
 .newsmodal .body{white-space:pre-wrap;margin-top:10px}
+.extras{margin-top:14px;border-top:1px dashed #D9CBA3;padding-top:10px;font-size:15px}
+.exline{padding:2px 0;word-break:break-all}
+.hasattach{font-size:14px}
+.modal input[type=file]{font-size:14px;margin-top:2px;max-width:100%}
 
 /* 聯絡簿 */
 .hwlist{margin:8px 0;padding-left:0;list-style:none;counter-reset:hw}
@@ -406,6 +410,8 @@ function formModal(opt){
   opt.fields.forEach(function(fl){
     if (fl.type === 'checkbox'){
       html += '<label class="check"><input type="checkbox" name="'+fl.key+'"'+(fl.value?' checked':'')+'> '+esc(fl.label)+'</label>';
+    } else if (fl.type === 'file'){
+      html += '<label>'+esc(fl.label)+'</label><input type="file" name="'+fl.key+'" multiple>';
     } else if (fl.type === 'textarea'){
       html += '<label>'+esc(fl.label)+'</label><textarea name="'+fl.key+'" placeholder="'+esc(fl.placeholder||'')+'">'+esc(fl.value||'')+'</textarea>';
     } else {
@@ -422,7 +428,9 @@ function formModal(opt){
     var out = {}, form = ev.target;
     opt.fields.forEach(function(fl){
       var el = form.elements[fl.key];
-      out[fl.key] = (fl.type === 'checkbox') ? el.checked : el.value.trim();
+      if (fl.type === 'checkbox') out[fl.key] = el.checked;
+      else if (fl.type === 'file') out[fl.key] = el.files;
+      else out[fl.key] = el.value.trim();
     });
     opt.onSubmit(out);
   });
@@ -458,6 +466,7 @@ function renderNews(){
   list.forEach(function(n){
     h += '<li>'+(n.pin ? '<span class="pin">📌</span>' : '')+
       '<button class="newstitle" data-act="show-news" data-id="'+n.id+'">'+esc(n.title)+'</button>'+
+      (((n.links&&n.links.length)||(n.files&&n.files.length)) ? '<span class="hasattach" title="有附件或連結">📎</span>' : '')+
       '<span class="hdate">'+fmtDate(n.date)+'</span>'+toolsFor('news', n.id)+'</li>';
   });
   h += '</ul></div>';
@@ -465,9 +474,15 @@ function renderNews(){
 }
 function showNews(item){
   if (!item) return;
+  var extras = '';
+  (item.links||[]).forEach(function(L){ extras += '<div class="exline">🔗 '+linkLine(L)+'</div>'; });
+  (item.files||[]).forEach(function(f){
+    extras += '<div class="exline">📎 <a href="'+esc(f.u)+'" target="_blank" rel="noopener">'+esc(f.n)+'</a></div>';
+  });
   var ov = openModal('<div class="newsmodal"><h2>'+(item.pin?'📌 ':'')+esc(item.title)+'</h2>'+
     '<span class="datebadge">'+fmtDate(item.date)+'</span>'+
     '<div class="body">'+esc(item.body||'')+'</div>'+
+    (extras ? '<div class="extras">'+extras+'</div>' : '')+
     '<div class="actions"><button class="btn primary" data-x="close">關閉</button></div></div>');
   ov.querySelector('.modal').classList.add('wide');
   ov.querySelector('[data-x=close]').addEventListener('click', closeModal);
@@ -656,21 +671,78 @@ function findItem(arr, id){ for (var i=0;i<arr.length;i++){ if (arr[i].id===id) 
 function removeItem(arr, id){ var i; for (i=0;i<arr.length;i++){ if (arr[i].id===id){ arr.splice(i,1); return; } } }
 
 function newsForm(item){
+  var oldFiles = (item && item.files) ? item.files : [];
+  var fields = [
+    {key:'date', label:'日期', type:'date', value:item?item.date:today(), required:true},
+    {key:'title', label:'標題', type:'text', value:item?item.title:'', required:true},
+    {key:'body', label:'內容', type:'textarea', value:item?item.body:''},
+    {key:'links', label:'相關網址（選填，一行一個，網址前可加說明文字）', type:'textarea',
+      value:item?(item.links||[]).join('\n'):'', placeholder:'例如：\n學校首頁 https://www.msps.tp.edu.tw\nhttps://…'}
+  ];
+  oldFiles.forEach(function(f, i){
+    fields.push({key:'rmf'+i, label:'移除附件：'+f.n, type:'checkbox', value:false});
+  });
+  if (API_URL) fields.push({key:'newfiles', label:'新增附件（可多選，單檔 15MB 以內）', type:'file'});
+  fields.push({key:'pin', label:'📌 置頂這則消息', type:'checkbox', value:item?item.pin:false});
   formModal({
     title: item ? '編輯消息' : '新增消息',
-    fields: [
-      {key:'date', label:'日期', type:'date', value:item?item.date:today(), required:true},
-      {key:'title', label:'標題', type:'text', value:item?item.title:'', required:true},
-      {key:'body', label:'內容', type:'textarea', value:item?item.body:''},
-      {key:'pin', label:'📌 置頂這則消息', type:'checkbox', value:item?item.pin:false}
-    ],
+    fields: fields,
     onSubmit: function(v){
       if (!v.title){ toast('標題不能空白喔'); return; }
-      if (item){ item.date=v.date; item.title=v.title; item.body=v.body; item.pin=v.pin; }
-      else data.news.push({id:uid(), date:v.date, title:v.title, body:v.body, pin:v.pin});
-      closeModal(); save('消息已發布！');
+      var links = v.links.split('\n').map(function(x){ return x.trim(); }).filter(Boolean);
+      var keep = oldFiles.filter(function(f, i){ return !v['rmf'+i]; });
+      var picked = [];
+      if (v.newfiles){ for (var i=0; i<v.newfiles.length; i++) picked.push(v.newfiles[i]); }
+      for (var j=0; j<picked.length; j++){
+        if (picked[j].size > 15*1024*1024){
+          toast('附件「'+picked[j].name+'」超過 15MB，請改用雲端硬碟連結分享。'); return;
+        }
+      }
+      var finish = function(uploaded){
+        var files = keep.concat(uploaded);
+        if (item){ item.date=v.date; item.title=v.title; item.body=v.body; item.pin=v.pin; item.links=links; item.files=files; }
+        else data.news.push({id:uid(), date:v.date, title:v.title, body:v.body, pin:v.pin, links:links, files:files});
+        closeModal(); save('消息已發布！');
+      };
+      if (picked.length) uploadFiles(picked, finish);
+      else finish([]);
     }
   });
+}
+function uploadFiles(list, done){
+  var out = [], i = 0;
+  var next = function(){
+    if (i >= list.length){ done(out); return; }
+    var f = list[i++];
+    toast('上傳附件中…（'+i+'／'+list.length+'）', true);
+    var reader = new FileReader();
+    reader.onload = function(){
+      var b64 = String(reader.result).split(',')[1] || '';
+      fetch(API_URL, {method:'POST', body: JSON.stringify(
+        {action:'upload', site: SITE_ID, pw: teacherPw, name: f.name, mime: f.type, data64: b64})})
+        .then(function(r){ return r.json(); })
+        .then(function(res){
+          if (res && res.ok){
+            out.push({n: res.name, u: res.url});
+            if (res.shared === false) toast('「'+f.name+'」已上傳，但無法設成公開連結（帳號限制），家長可能打不開。');
+            next();
+          }
+          else if (res && res.error === 'bad_pw'){ toast('密碼驗證失敗，請登出後重新登入再試。'); }
+          else { toast('附件「'+f.name+'」上傳失敗，請再按一次儲存重試。'); }
+        })
+        .catch(function(){ toast('上傳失敗，請檢查網路後再按一次儲存。'); });
+    };
+    reader.onerror = function(){ toast('讀取檔案失敗：'+f.name); };
+    reader.readAsDataURL(f);
+  };
+  next();
+}
+function linkLine(line){
+  var m = String(line).match(/https?:\/\/\S+/);
+  if (!m) return '<span>'+esc(line)+'</span>';
+  var url = m[0];
+  var label = String(line).replace(url, '').trim() || url;
+  return '<a href="'+esc(url)+'" target="_blank" rel="noopener">'+esc(label)+'</a>';
 }
 function contactForm(item){
   formModal({
