@@ -508,8 +508,10 @@ function renderCalendar(){
   h += '</div><p class="callegend"><span class="lk">15</span>＝有聯絡簿的日子，點一下就能看</p></aside>';
   return h;
 }
-function honorDeed(o){
-  return o.deed || ((o.award||'') + (o.note ? '：'+o.note : ''));
+function honorText(o){
+  if (o.text) return o.text;
+  var deed = o.deed || ((o.award||'') + (o.note ? '：'+o.note : ''));
+  return (o.name ? o.name + '　' : '') + deed;
 }
 function renderHonor(){
   var list = data.honor.slice().sort(byDateDesc);
@@ -517,8 +519,7 @@ function renderHonor(){
   if (!list.length){ h += '<p class="empty">榮譽榜虛位以待，大家加油！</p>'; return h; }
   h += '<div class="card"><ul class="honorlist">';
   list.forEach(function(o){
-    h += '<li>'+ICON.star+'<span class="who">'+esc(o.name)+'</span>'+
-      '<span class="deed">'+esc(honorDeed(o))+'</span>'+
+    h += '<li>'+ICON.star+'<span class="deed">'+esc(honorText(o))+'</span>'+
       '<span class="hdate">'+fmtDate(o.date)+'</span>'+toolsFor('honor', o.id)+'</li>';
   });
   h += '</ul></div>';
@@ -685,14 +686,13 @@ function honorForm(item){
   formModal({
     title: item ? '編輯榮譽榜' : '新增榮譽榜',
     fields: [
-      {key:'name', label:'學生姓名', type:'text', value:item?item.name:'', required:true},
-      {key:'deed', label:'得獎事蹟', type:'text', value:item?honorDeed(item):'',
-        placeholder:'例如：模範生、國語文競賽第一名', required:true}
+      {key:'t', label:'榮譽內容（姓名和事蹟直接一起打）', type:'text', value:item?honorText(item):'',
+        placeholder:'例如：王小明　模範生', required:true}
     ],
     onSubmit: function(v){
-      if (!v.name || !v.deed){ toast('姓名和得獎事蹟都要填喔'); return; }
-      if (item){ item.name=v.name; item.deed=v.deed; delete item.award; delete item.note; }
-      else data.honor.push({id:uid(), date:today(), name:v.name, deed:v.deed});
+      if (!v.t){ toast('內容不能空白喔'); return; }
+      if (item){ item.text=v.t; delete item.name; delete item.deed; delete item.award; delete item.note; }
+      else data.honor.push({id:uid(), date:today(), text:v.t});
       closeModal(); save('榮譽榜已更新！');
     }
   });
