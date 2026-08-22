@@ -633,7 +633,7 @@ function render(){
   }
   document.title = data.site.title || '班級網頁';
   h += '<header class="banner">'+BANNER+
-    '<div class="title"><h1>'+esc(data.site.title)+'</h1><div class="stars">☆★☆　快樂學習・天天開心　☆★☆</div></div></header>';
+    '<div class="title"><h1>'+esc(data.site.title)+'</h1></div></header>';
   if (data.quotes.length){
     h += '<div class="quotebar">💬<span id="quotetext">'+esc(data.quotes[quoteIdx % data.quotes.length])+'</span>'+
       '<button class="btn small" data-act="quote-next" title="換一句" aria-label="換一句格言">↻</button></div>';
