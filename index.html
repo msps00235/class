@@ -229,7 +229,15 @@ footer .spacer{flex:1}
 // ▼ 部署 Google Apps Script 後，把「網頁應用程式」網址貼在下面的引號中
 var API_URL = 'https://script.google.com/macros/s/AKfycbzgHIt0SkgZIDHavubHl9QoMYvRgMgkFrSGhN_OVbdn3OM_dlG9wlznBzmn5WovWND1/exec';
 // ▼ 學年代號：每個學年/班級一個，資料各自獨立（例：'115-404'）
-var SITE_ID = '115-404';
+//   網址不變，每年只改這一行；網址加 ?site=舊代號 可回看以前的學年
+var DEFAULT_SITE = '115-404';
+var SITE_ID = (function(){
+  try {
+    var q = new URLSearchParams(location.search).get('site');
+    if (q) return q.replace(/[^A-Za-z0-9_-]/g, '') || DEFAULT_SITE;
+  } catch(e){}
+  return DEFAULT_SITE;
+})();
 var data = JSON.parse(document.getElementById('page-data').textContent);
 var EMBED_QUOTES = (data.quotes || []).slice();
 ensureDefaults();

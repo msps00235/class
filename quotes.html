@@ -59,7 +59,14 @@ ol.qlist li::before{content:counter(q);flex:0 0 auto;width:26px;height:26px;bord
 (function(){
 'use strict';
 var API_URL = 'https://script.google.com/macros/s/AKfycbzgHIt0SkgZIDHavubHl9QoMYvRgMgkFrSGhN_OVbdn3OM_dlG9wlznBzmn5WovWND1/exec';
-var SITE_ID = '115-404';
+var DEFAULT_SITE = '115-404';
+var SITE_ID = (function(){
+  try {
+    var q = new URLSearchParams(location.search).get('site');
+    if (q) return q.replace(/[^A-Za-z0-9_-]/g, '') || DEFAULT_SITE;
+  } catch(e){}
+  return DEFAULT_SITE;
+})();
 var DEFAULT_QUOTES = [
 "所有的幸運，都是努力埋下的伏筆。",
 "好運藏在努力之中，機會是給準備好的人。",
