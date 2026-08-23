@@ -293,8 +293,8 @@ try {
 } catch(e){ cachedRaw = ''; }
 var root = document.getElementById('root');
 var teacher = false, tab = 'news', schedEdit = false, schedOpen = false, teacherPw = '', selectedSubj = '';
-var schedWeekView = false;
-var schedDay = (function(){ var d = new Date().getDay(); return (d >= 1 && d <= 5) ? d - 1 : 0; })();
+var schedDay = 0, schedWeekView = false;
+(function(){ var d = new Date().getDay(); if (d >= 1 && d <= 5) schedDay = d - 1; else schedWeekView = true; })();
 try { teacher = sessionStorage.getItem('t404') === '1'; } catch(e){}
 try { teacherPw = sessionStorage.getItem('t404pw') || ''; } catch(e){}
 var selDate = null;
