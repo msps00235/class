@@ -204,11 +204,30 @@ table.mini{width:100%;border-collapse:separate;border-spacing:2px;font-size:11px
 .schedtitle{display:flex;align-items:center;gap:8px;font-family:var(--font-hand);font-size:22px;font-weight:700;color:var(--navy);margin-bottom:8px}
 .schedtitle svg{width:24px;height:24px}
 @media (prefers-reduced-motion:no-preference){.schedpanel{transition:transform .2s ease,opacity .2s ease,visibility .2s}}
+.daytabs,.dayview{display:none}
 @media (max-width:760px){
   .schedpanel{position:fixed;left:6px;right:6px;top:10px;width:auto;transform-origin:center top;
-    max-height:calc(100vh - 20px);padding:10px 8px}
+    max-height:calc(100vh - 20px);padding:10px 10px}
   .schedmini:hover:not(.open) .schedpanel{visibility:hidden;opacity:0;transform:scale(.55)}
-  /* 課表整週剛好塞進螢幕，不需左右滑動 */
+  /* 手機預設單日直式清單；「週」為整週總覽；編輯時強制整週格狀 */
+  .schedpanel .daytabs{display:flex;gap:6px;margin-bottom:10px}
+  .schedpanel.editing .daytabs{display:none}
+  .schedpanel:not(.gridmode) .schedwrap{display:none}
+  .schedpanel.gridmode .dayview{display:none}
+  .schedpanel:not(.gridmode) .dayview{display:block}
+  .daytab{flex:1;border:2px solid var(--ink);background:var(--cream);border-radius:10px;padding:5px 0;
+    font-family:var(--font-hand);font-size:16px;font-weight:700;color:var(--ink);cursor:pointer}
+  .daytab.on{background:var(--gold)}
+  .daytab:focus-visible{outline:3px solid var(--navy);outline-offset:1px}
+  .drow{display:flex;align-items:center;gap:10px;padding:6px 2px;border-bottom:1px dashed #D9CBA3}
+  .drow:last-child{border-bottom:none}
+  .dlabel{flex:0 0 88px;font-weight:700;font-size:15px;line-height:1.3}
+  .dlabel small{display:block;font-weight:400;font-size:12px;color:#6b5a3e}
+  .dsubj{flex:1;text-align:center;border-radius:10px;padding:9px 4px;font-size:17px}
+  .drow.ddiv{background:var(--stripe);border-radius:10px;border-bottom:none;justify-content:center;gap:8px;
+    font-family:var(--font-hand);font-weight:700;font-size:15px;padding:7px;margin:4px 0}
+  .drow.ddiv small{font-weight:400;color:#6b5a3e}
+  /* 整週總覽（縮小塞滿版） */
   .schedpanel table.sched{min-width:0;border-spacing:2px;padding:4px}
   .schedpanel .sched th{font-size:12px;padding:4px 1px}
   .schedpanel .sched td{font-size:11px;padding:5px 1px}
@@ -274,6 +293,8 @@ try {
 } catch(e){ cachedRaw = ''; }
 var root = document.getElementById('root');
 var teacher = false, tab = 'news', schedEdit = false, schedOpen = false, teacherPw = '', selectedSubj = '';
+var schedWeekView = false;
+var schedDay = (function(){ var d = new Date().getDay(); return (d >= 1 && d <= 5) ? d - 1 : 0; })();
 try { teacher = sessionStorage.getItem('t404') === '1'; } catch(e){}
 try { teacherPw = sessionStorage.getItem('t404pw') || ''; } catch(e){}
 var selDate = null;
@@ -584,8 +605,28 @@ function renderSchedWidget(){
     h += '</tr>';
   });
   h += '</table><p class="minitip">滑鼠移過來（或點標題）可以放大</p>';
-  h += '<div class="schedpanel"><div class="schedtitle">'+ICON.sched+'<span>'+esc(data.site.sched)+'</span>'+
+  var gridmode = schedWeekView || schedEdit;
+  h += '<div class="schedpanel'+(gridmode?' gridmode':'')+(schedEdit?' editing':'')+'">'+
+    '<div class="schedtitle">'+ICON.sched+'<span>'+esc(data.site.sched)+'</span>'+
     '<button class="btn small" data-act="sched-toggle" style="margin-left:auto" aria-label="關閉大課表">✕</button></div>';
+  var di = Math.min(schedDay, s.days.length - 1);
+  h += '<div class="daytabs">';
+  s.days.forEach(function(d, i){
+    h += '<button class="daytab'+((!schedWeekView && i===di)?' on':'')+'" data-act="sched-pickday" data-d="'+i+'">'+
+      esc(String(d).replace('週',''))+'</button>';
+  });
+  h += '<button class="daytab'+(schedWeekView?' on':'')+'" data-act="sched-week">週</button></div>';
+  h += '<div class="dayview">';
+  s.rows.forEach(function(r){
+    if (!r.cells){
+      h += '<div class="drow ddiv">'+esc(r.label)+(r.time?'<small>'+esc(r.time)+'</small>':'')+'</div>';
+      return;
+    }
+    var c = String(r.cells[di]||'—').trim() || '—';
+    h += '<div class="drow"><span class="dlabel">'+esc(r.label)+(r.time?'<small>'+esc(r.time)+'</small>':'')+'</span>'+
+      '<span class="dsubj" style="background:'+subjColor(c)+'">'+esc(c)+'</span></div>';
+  });
+  h += '</div>';
   var ce = schedEdit ? ' contenteditable="true"' : '';
   h += '<div class="schedwrap"><table class="sched"><thead><tr><th class="corner">節次</th>';
   s.days.forEach(function(d,i){ h += '<th'+(schedEdit?' contenteditable="true"':'')+' data-day="'+i+'">'+esc(d)+'</th>'; });
@@ -949,6 +990,8 @@ root.addEventListener('click', function(ev){
       }
     });
   }
+  else if (act==='sched-pickday'){ schedDay=+btn.dataset.d; schedWeekView=false; render(); }
+  else if (act==='sched-week'){ schedWeekView=true; render(); }
   else if (act==='sched-toggle'){ schedOpen=!schedOpen; if(!schedOpen) schedEdit=false; render(); }
   else if (act==='sched-edit'){ schedEdit=true; schedOpen=true; selectedSubj=''; render(); }
   else if (act==='sched-cancel'){ schedEdit=false; selectedSubj=''; render(); }
