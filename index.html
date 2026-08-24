@@ -437,40 +437,40 @@ var BANNER_BG =
 /* ── 各主題的橫幅插圖（Twemoji，CC-BY 4.0，檔案在 art/ 資料夾） ──
    想換成自己的插圖：把整張橫幅圖存成 art/custom/<主題代號>.png 上傳即可，會優先使用。 */
 var ART = {
-sunny:['1f437','piggybank','1fa81','1fa80','1f9f8'],
-sky:['1f308','2600','1f426','2601','1fa81'],
-forest:['1f332','1f98a','1f344','1f994','1f333'],
-sakura:['1f338','1f98b','1f337','1f338','1f343'],
-lavender:['1fabb','1f98b','1f49c','1fabb','1f33f'],
-ocean:['1f433','1f420','1f419','1f41a','1f30a'],
-mermaid:['1f9dc-200d-2640-fe0f','1f41a','1f420','1fae7','1f4a7'],
-melon:['1f349','1f366','2600','1f367','1f379'],
-citrus:['1f34a','1f34b','1f34d','1f96d','1f343'],
-mint:['1f33f','1fad6','1f340','1f343','1f375'],
-nordic:['1f3d4','1f3e1','1f332','2744','26c4'],
-notebook:['1f4d3','270f','1f4cf','1f4ce','1f4d0'],
-milktea:['1f9cb','1f36a','1f9c1','2615','1f36e'],
-chalk:['1f4da','1f9ee','1f4d0','270f','1f393'],
-starry:['1f319','1f31f','1f320','1f52d','2b50'],
-space:['1f680','1fa90','1f47d','1f6f8','1f31f'],
-dino:['1f995','1f996','1f95a','1f334','1f30b'],
-cat:['1f431','1f9f6','1f43e','1f408','1f41f'],
-rainbow:['1f308','1f388','1f389','26c5','1f38a'],
-festive:['1f3ee','1f9e7','1f9e8','1f409','1f386'],
-xmas:['1f384','1f385','1f381','26c4','1f98c'],
-jobs:['1f46e','1f468-200d-1f373','1f469-200d-2695-fe0f','1f477','1f468-200d-1f692','1f9d1-200d-1f3eb'],
-bugs:['1f41e','1f98b','1f40c','1f41d','1f997','1f577'],
-world:['1f5fc','1f5fd','1f5ff','26e9','1f3ef','1f30d'],
-campus:['1f3eb','1f68c','1f392','1f514','1f308'],
-stationery:['1f58d','2702','1f58c','1f3a8','270f'],
-music:['1f3bb','1f3ba','1f3b6','1f941','1f3b9']
+sunny:['piggybank','1fa81','paperplane'],
+sky:['2601','2600','1f426'],
+forest:['1f332','1f3e1','1f344'],
+sakura:['1f338','1f98b','1f343'],
+lavender:['1fabb','1f98b','1f49c'],
+ocean:['1f433','1f420','1f419'],
+mermaid:['1f9dc-200d-2640-fe0f','1f41a','1fae7'],
+melon:['1f349','2600','1f366'],
+citrus:['1f34a','1f34b','1f343'],
+mint:['1f33f','1fad6','1f343'],
+nordic:['1f3d4','1f3e1','1f332'],
+notebook:['1f4d3','270f','1f4cf'],
+milktea:['1f9cb','1f36a','2615'],
+chalk:['1f4da','1f9ee','1f393'],
+starry:['1f319','1f320','1f31f'],
+space:['1f680','1fa90','1f47d'],
+dino:['1f995','1f996','1f95a'],
+cat:['1f431','1f9f6','1f43e'],
+rainbow:['1f308','1f388','1f389'],
+festive:['1f3ee','1f9e7','1f386'],
+xmas:['1f384','1f385','1f381'],
+jobs:['1f46e','1f469-200d-2695-fe0f','1f477'],
+bugs:['1f41e','1f98b','1f40c'],
+world:['1f5fc','1f5fd','1f5ff'],
+campus:['1f3eb','1f68c','1f392'],
+stationery:['1f58d','2702','1f3a8'],
+music:['1f3bb','1f3ba','1f3b6']
 };
 function currentThemeId(){
   return appliedTheme || (data.site && data.site.theme) || 'sunny';
 }
 function artImgs(id){
   var list = ART[id] || ART.sunny;
-  var sizes = list.length >= 6 ? [62,52,58,50,56,48] : [80,60,70,54,64];
+  var sizes = list.length <= 3 ? [86,64,76] : (list.length >= 6 ? [62,52,58,50,56,48] : [80,60,70,54,64]);
   var x = 24, h = '';
   for (var i = 0; i < list.length; i++){
     var s = sizes[i % sizes.length];
