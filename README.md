@@ -117,7 +117,7 @@ var API_URL = '…';
 
 # 素材聲明
 
-橫幅插圖使用 [OpenMoji](https://openmoji.org)（the open-source emoji and icon project），依 [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) 授權使用，檔案位於 `art/`。
+橫幅插圖主要使用 [OpenMoji](https://openmoji.org)（CC BY-SA 4.0），部分取自 [SVG Repo](https://www.svgrepo.com)（CC0），檔案位於 `art/`。
 
 # 注意事項
 
