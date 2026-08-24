@@ -110,7 +110,7 @@ var DEFAULT_QUOTES = [
 ];
 
 var data = null, pw = '', editIdx = -1;
-try { pw = sessionStorage.getItem('t404pw') || ''; } catch(e){}
+try { pw = sessionStorage.getItem('class-pw') || ''; } catch(e){}
 var main = document.getElementById('main');
 
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){
@@ -133,7 +133,7 @@ function saveAll(msg){
     .then(function(r){ return r.json(); })
     .then(function(res){
       if (res && res.ok){ toast(msg || '已儲存！'); render(); }
-      else if (res && res.error === 'bad_pw'){ pw=''; try{sessionStorage.removeItem('t404pw');}catch(e){} toast('密碼驗證失敗，請重新登入。'); render(); }
+      else if (res && res.error === 'bad_pw'){ pw=''; try{sessionStorage.removeItem('class-pw');}catch(e){} toast('密碼驗證失敗，請重新登入。'); render(); }
       else if (res && res.error === 'bad_request'){ toast('後端尚未更新到最新版，請先重新部署 Apps Script。'); }
       else toast('儲存失敗，請再試一次。');
     })
@@ -185,7 +185,7 @@ function doLogin(){
   var v = document.getElementById('pwin').value;
   if (hash(v) === data.pw){
     pw = v;
-    try{ sessionStorage.setItem('t404pw', v); sessionStorage.setItem('t404','1'); }catch(e){}
+    try{ sessionStorage.setItem('class-pw', v); sessionStorage.setItem('class-teacher','1'); }catch(e){}
     if (!data.quotes.length && DEFAULT_QUOTES.length){
       data.quotes = DEFAULT_QUOTES.slice();
       saveAll('已將 '+DEFAULT_QUOTES.length+' 句預設格言存入資料庫！');

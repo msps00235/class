@@ -280,7 +280,7 @@ var quoteIdx = Math.floor(Math.random() * Math.max(1, data.quotes.length));
 var loaded = !API_URL, loadError = false, cachedRaw = '';
 // 上次載入過的資料先立刻顯示，背景再抓最新的（加快開啟速度）
 try {
-  cachedRaw = localStorage.getItem('cwdata') || '';
+  cachedRaw = localStorage.getItem('class-cache') || '';
   if (cachedRaw){
     var cached = JSON.parse(cachedRaw);
     if (cached && cached.news && cached.schedule){
@@ -295,8 +295,8 @@ var root = document.getElementById('root');
 var teacher = false, tab = 'news', schedEdit = false, schedOpen = false, teacherPw = '', selectedSubj = '';
 var schedDay = 0, schedWeekView = false;
 (function(){ var d = new Date().getDay(); if (d >= 1 && d <= 5) schedDay = d - 1; else schedWeekView = true; })();
-try { teacher = sessionStorage.getItem('t404') === '1'; } catch(e){}
-try { teacherPw = sessionStorage.getItem('t404pw') || ''; } catch(e){}
+try { teacher = sessionStorage.getItem('class-teacher') === '1'; } catch(e){}
+try { teacherPw = sessionStorage.getItem('class-pw') || ''; } catch(e){}
 var selDate = null;
 var calInit = new Date();
 var calY = calInit.getFullYear(), calM = calInit.getMonth();
@@ -398,7 +398,7 @@ function save(flash){
     .then(function(r){ return r.json(); })
     .then(function(res){
       if (res && res.ok){
-        try { localStorage.setItem('cwdata', JSON.stringify(data)); } catch(e){}
+        try { localStorage.setItem('class-cache', JSON.stringify(data)); } catch(e){}
         toast(flash || '已儲存！');
       }
       else if (res && res.error === 'bad_pw'){ toast('密碼驗證失敗，請登出後重新登入再試。'); }
@@ -910,7 +910,7 @@ function backupModal(){
                   return fetch(API_URL).then(function(r3){ return r3.json(); }).then(function(remote){
                     if (remote && remote.news && remote.schedule){
                       data = remote; ensureDefaults();
-                      try { localStorage.setItem('cwdata', JSON.stringify(remote)); } catch(e){}
+                      try { localStorage.setItem('class-cache', JSON.stringify(remote)); } catch(e){}
                       render(); toast('已還原到 '+day+'！');
                     }
                   });
@@ -936,7 +936,7 @@ function loginForm(){
     onSubmit:function(v){
       if (hash(v.pw) === data.pw){
         teacher = true; teacherPw = v.pw;
-        try{ sessionStorage.setItem('t404','1'); sessionStorage.setItem('t404pw', v.pw); }catch(e){}
+        try{ sessionStorage.setItem('class-teacher','1'); sessionStorage.setItem('class-pw', v.pw); }catch(e){}
         closeModal(); render(); toast('老師您好！現在可以編輯內容了。');
       } else toast('密碼不對喔，再試一次。');
     }
@@ -958,7 +958,7 @@ function changePwForm(){
           .then(function(res){
             if (res && res.ok){
               teacherPw = v.p1;
-              try{ sessionStorage.setItem('t404pw', v.p1); }catch(e){}
+              try{ sessionStorage.setItem('class-pw', v.p1); }catch(e){}
               data.pw = hash(v.p1);
               closeModal(); save('密碼已更新！');
             } else if (res && res.error === 'bad_pw'){ toast('目前密碼驗證失敗，請登出後重新登入再試。'); }
@@ -1027,7 +1027,7 @@ root.addEventListener('click', function(ev){
   }
   if (act==='login') loginForm();
   else if (act==='logout'){ teacher=false; schedEdit=false; teacherPw='';
-    try{ sessionStorage.removeItem('t404'); sessionStorage.removeItem('t404pw'); }catch(e){} render(); }
+    try{ sessionStorage.removeItem('class-teacher'); sessionStorage.removeItem('class-pw'); }catch(e){} render(); }
   else if (act==='sitecfg') siteForm();
   else if (act==='backup') backupModal();
   else if (act==='changepw') changePwForm();
@@ -1108,7 +1108,7 @@ if (API_URL){
     .then(function(remote){
       if (remote && remote.news && remote.schedule){
         var raw = JSON.stringify(remote);
-        try { localStorage.setItem('cwdata', raw); } catch(e){}
+        try { localStorage.setItem('class-cache', raw); } catch(e){}
         if (raw !== cachedRaw){
           data = remote;
           ensureDefaults();
@@ -1134,7 +1134,7 @@ function refreshData(){
       if (!(remote && remote.news && remote.schedule)) return;
       if (saving || schedEdit || overlayEl) return; // 抓回來時已在編輯就放棄這次更新
       var raw = JSON.stringify(remote);
-      try { localStorage.setItem('cwdata', raw); } catch(e){}
+      try { localStorage.setItem('class-cache', raw); } catch(e){}
       if (raw !== JSON.stringify(data)){
         data = remote;
         ensureDefaults();
