@@ -451,9 +451,9 @@ function formModal(opt){
     opt.onSubmit(out);
   });
 }
-function confirmModal(msg, onYes){
+function confirmModal(msg, onYes, yesLabel){
   var ov = openModal('<h2>請確認</h2><p>'+esc(msg)+'</p>'+
-    '<div class="actions"><button class="btn" data-x="cancel">取消</button><button class="btn danger" data-x="yes">刪除</button></div>');
+    '<div class="actions"><button class="btn" data-x="cancel">取消</button><button class="btn danger" data-x="yes">'+esc(yesLabel||'刪除')+'</button></div>');
   ov.querySelector('[data-x=cancel]').addEventListener('click', closeModal);
   ov.querySelector('[data-x=yes]').addEventListener('click', function(){ closeModal(); onYes(); });
 }
@@ -680,6 +680,7 @@ function render(){
       '<span class="spacer"></span>'+
       '<a class="btn small" href="quotes.html">格言管理</a>'+
       '<button class="btn small" data-act="sitecfg">網站設定</button>'+
+      '<button class="btn small" data-act="backup">備份</button>'+
       '<button class="btn small" data-act="changepw">修改密碼</button>'+
       '<button class="btn small" data-act="logout">登出</button></div>';
   }
@@ -836,6 +837,88 @@ function siteForm(){
     }
   });
 }
+function backupModal(){
+  var ov = openModal('<h2>💾 備份與還原</h2>'+
+    '<p class="hint" style="margin:0 0 12px">每次儲存都會自動在您的雲端硬碟留下當天的快照（class/備份，保留 30 天）。</p>'+
+    '<div class="actions" style="justify-content:flex-start;margin:0 0 16px">'+
+      '<button class="btn" data-b="download">⬇ 下載備份檔</button>'+
+      '<label class="btn" style="cursor:pointer">⬆ 從檔案還原'+
+        '<input type="file" id="restorefile" accept=".json,application/json" style="display:none"></label>'+
+    '</div>'+
+    '<label>雲端快照（點日期即可還原）</label>'+
+    '<div id="bklist" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px">讀取中…</div>'+
+    '<div class="actions"><button class="btn" data-b="close">關閉</button></div>', true);
+  ov.querySelector('[data-b=close]').addEventListener('click', closeModal);
+  ov.querySelector('[data-b=download]').addEventListener('click', function(){
+    var blob = new Blob([JSON.stringify(data, null, 1)], {type:'application/json'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '班網備份-' + today() + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 5000);
+    toast('已開始下載備份檔。');
+  });
+  ov.querySelector('#restorefile').addEventListener('change', function(ev){
+    var f = ev.target.files && ev.target.files[0];
+    if (!f) return;
+    var reader = new FileReader();
+    reader.onload = function(){
+      var parsed = null;
+      try { parsed = JSON.parse(String(reader.result)); } catch(e){}
+      if (!parsed || !parsed.news || !parsed.schedule){ toast('這不是有效的班網備份檔。'); return; }
+      confirmModal('確定要用檔案「'+f.name+'」覆蓋目前的全部內容嗎？（目前狀態會先自動存成今天的雲端快照）', function(){
+        data = parsed; ensureDefaults();
+        save('已從備份檔還原！');
+      }, '還原');
+    };
+    reader.readAsText(f);
+  });
+  fetch(API_URL, {method:'POST', body: JSON.stringify({action:'listbackups', pw: teacherPw})})
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      var box = document.getElementById('bklist');
+      if (!box) return;
+      if (!res || !res.ok){
+        box.textContent = (res && res.error==='bad_pw') ? '密碼驗證失敗，請重新登入。'
+          : '無法讀取快照清單（後端可能尚未更新到最新版）。';
+        return;
+      }
+      if (!res.backups.length){ box.textContent = '還沒有快照，下次儲存時會自動建立第一份。'; return; }
+      box.innerHTML = res.backups.map(function(n){
+        var m = String(n).match(/(\d{4}-\d{2}-\d{2})\.json$/);
+        return '<button class="btn small bkitem" data-name="'+esc(n)+'">'+(m ? m[1] : esc(n))+'</button>';
+      }).join('');
+      box.querySelectorAll('.bkitem').forEach(function(b){
+        b.addEventListener('click', function(){
+          var name = b.dataset.name;
+          var day = (name.match(/(\d{4}-\d{2}-\d{2})\.json$/)||[])[1] || name;
+          confirmModal('確定還原到 '+day+' 的內容嗎？目前狀態會先自動存成今天的快照，之後仍可反悔。', function(){
+            toast('還原中…', true);
+            fetch(API_URL, {method:'POST', body: JSON.stringify({action:'restore', pw: teacherPw, name: name})})
+              .then(function(r){ return r.json(); })
+              .then(function(r2){
+                if (r2 && r2.ok){
+                  return fetch(API_URL).then(function(r3){ return r3.json(); }).then(function(remote){
+                    if (remote && remote.news && remote.schedule){
+                      data = remote; ensureDefaults();
+                      try { localStorage.setItem('cwdata', JSON.stringify(remote)); } catch(e){}
+                      render(); toast('已還原到 '+day+'！');
+                    }
+                  });
+                }
+                if (r2 && r2.error === 'bad_pw'){ toast('密碼驗證失敗，請重新登入。'); }
+                else { toast('還原失敗，請再試一次。'); }
+              })
+              .catch(function(){ toast('連不上資料伺服器，請稍後再試。'); });
+          }, '還原');
+        });
+      });
+    })
+    .catch(function(){
+      var box = document.getElementById('bklist');
+      if (box) box.textContent = '連不上資料伺服器。';
+    });
+}
 function loginForm(){
   formModal({
     title:'老師專區', submitLabel:'登入',
@@ -937,6 +1020,7 @@ root.addEventListener('click', function(ev){
   else if (act==='logout'){ teacher=false; schedEdit=false; teacherPw='';
     try{ sessionStorage.removeItem('t404'); sessionStorage.removeItem('t404pw'); }catch(e){} render(); }
   else if (act==='sitecfg') siteForm();
+  else if (act==='backup') backupModal();
   else if (act==='changepw') changePwForm();
   else if (act==='show-news') showNews(findItem(data.news,id));
   else if (act==='add-news') newsForm(null);

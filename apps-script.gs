@@ -12,8 +12,10 @@
 //  老師密碼存在「指令碼屬性」，所有學年共用，換一次全部生效。
 // ═══════════════════════════════════════════════════════════
 
-var ROOT_FOLDER = 'class';   // 雲端硬碟裡的主資料夾名稱
-var ATTACH_FOLDER = '附件';  // 附件子資料夾名稱
+var ROOT_FOLDER = 'class';    // 雲端硬碟裡的主資料夾名稱
+var ATTACH_FOLDER = '附件';   // 附件子資料夾名稱
+var BACKUP_FOLDER = '備份';   // 每日快照子資料夾名稱
+var BACKUP_KEEP = 30;         // 快照保留天數
 var FILE_PREFIX = 'class-data-';
 
 // ─────────────────────────────────────────────
@@ -61,12 +63,23 @@ function doPost(e) {
     }
 
     if (req.action === 'save' && req.data) {
-      saveData(cleanSite(req.site), req.data);
+      var site = cleanSite(req.site);
+      var text = JSON.stringify(req.data);
+      saveData(site, text);
+      writeBackup(site, text); // 每次儲存自動留當天快照
       return jsonReply({ ok: true });
     }
 
     if (req.action === 'upload' && req.data64 && req.name) {
       return jsonReply(uploadAttachment(req));
+    }
+
+    if (req.action === 'listbackups') {
+      return jsonReply({ ok: true, backups: listBackups(cleanSite(req.site)) });
+    }
+
+    if (req.action === 'restore' && req.name) {
+      return jsonReply(restoreBackup(cleanSite(req.site), String(req.name)));
     }
 
     return jsonReply({ ok: false, error: 'bad_request' });
@@ -130,11 +143,76 @@ function findDataFile(site) {
 }
 
 // 寫入某學年的資料（第一次會自動建檔）
-function saveData(site, data) {
-  var text = JSON.stringify(data);
+function saveData(site, text) {
   var file = findDataFile(site);
   if (file) file.setContent(text);
   else rootFolder().createFile(FILE_PREFIX + site + '.json', text, 'application/json');
+}
+
+// ─────────────────────────────────────────────
+//  每日快照備份（class/備份/backup-<site>-YYYY-MM-DD.json）
+// ─────────────────────────────────────────────
+
+function backupFolder() {
+  var root = rootFolder();
+  var it = root.getFoldersByName(BACKUP_FOLDER);
+  return it.hasNext() ? it.next() : root.createFolder(BACKUP_FOLDER);
+}
+
+function backupNameRe(site) {
+  return new RegExp('^backup-' + site + '-\\d{4}-\\d{2}-\\d{2}\\.json$');
+}
+
+// 寫入（或覆蓋）當天的快照，並清掉過期的
+function writeBackup(site, text) {
+  var folder = backupFolder();
+  var name = 'backup-' + site + '-' +
+    Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd') + '.json';
+  var it = folder.getFilesByName(name);
+  if (it.hasNext()) it.next().setContent(text);
+  else folder.createFile(name, text, 'application/json');
+  cleanupBackups(folder, site);
+}
+
+// 只保留最近 BACKUP_KEEP 天的快照
+function cleanupBackups(folder, site) {
+  var re = backupNameRe(site);
+  var files = folder.getFiles();
+  var arr = [];
+  while (files.hasNext()) {
+    var f = files.next();
+    if (re.test(f.getName())) arr.push(f);
+  }
+  arr.sort(function(a, b) { return a.getName() < b.getName() ? 1 : -1; }); // 新→舊
+  for (var i = BACKUP_KEEP; i < arr.length; i++) arr[i].setTrashed(true);
+}
+
+// 快照檔名清單（新→舊）
+function listBackups(site) {
+  var re = backupNameRe(site);
+  var files = backupFolder().getFiles();
+  var names = [];
+  while (files.hasNext()) {
+    var n = files.next().getName();
+    if (re.test(n)) names.push(n);
+  }
+  names.sort().reverse();
+  return names;
+}
+
+// 還原某天的快照；還原前先把「現在的狀態」存成今天的快照，永遠有路可退
+function restoreBackup(site, name) {
+  if (!backupNameRe(site).test(name)) return { ok: false, error: 'bad_request' };
+  var it = backupFolder().getFilesByName(name);
+  if (!it.hasNext()) return { ok: false, error: 'not_found' };
+  var text = it.next().getBlob().getDataAsString();
+  var parsed = null;
+  try { parsed = JSON.parse(text); } catch (e) {}
+  if (!parsed || !parsed.news || !parsed.schedule) return { ok: false, error: 'bad_backup' };
+  var live = findDataFile(site);
+  if (live) writeBackup(site, live.getBlob().getDataAsString());
+  saveData(site, text);
+  return { ok: true };
 }
 
 // ─────────────────────────────────────────────
