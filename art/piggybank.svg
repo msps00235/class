@@ -1,18 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">
-<!-- 小豬撲滿（手繪，配合 OpenMoji 黑外框風格） -->
 <g stroke="#000" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round">
-<circle cx="17.5" cy="8" r="3.6" fill="#F2C94C"/>
-<path d="M17.5 6.2 L17.5 9.8" fill="none"/>
-<ellipse cx="17" cy="21" rx="13.5" ry="9.8" fill="#F79EB5"/>
-<path d="M22.5 12.6 L26.5 9.2 L27.8 13.8 Z" fill="#F0879F"/>
-<path d="M9.5 13.2 L6.8 9.6 L11.8 10.9 Z" fill="#F0879F"/>
-<rect x="12.6" y="11.2" width="8.8" height="2" rx="1" fill="#3F3F3F"/>
-<ellipse cx="29.6" cy="20.6" rx="3.4" ry="4.1" fill="#F8B9CB"/>
-<rect x="8.6" y="28.6" width="3.6" height="4.4" rx="1.6" fill="#F0879F"/>
-<rect x="21.4" y="28.6" width="3.6" height="4.4" rx="1.6" fill="#F0879F"/>
-<path d="M3.8 21.5 Q 0.8 20.8 1.6 18.2 Q 2.2 16.2 4.6 17" fill="none"/>
+<circle cx="18" cy="6" r="3" fill="#F2C94C"/>
+<path d="M18 4.6 L18 7.4" fill="none"/>
+<circle cx="18" cy="21" r="12.5" fill="#F9AFC3"/>
+<path d="M9.5 12 L7.5 8.5 L12 9.8 Z" fill="#F48FB1"/>
+<path d="M26.5 12 L28.5 8.5 L24 9.8 Z" fill="#F48FB1"/>
+<rect x="14.5" y="11" width="7" height="1.8" rx="0.9" fill="#3F3F3F"/>
+<ellipse cx="18" cy="23" rx="3.8" ry="2.9" fill="#F48FB1"/>
+<rect x="11" y="31" width="4" height="3.2" rx="1.5" fill="#F48FB1"/>
+<rect x="21" y="31" width="4" height="3.2" rx="1.5" fill="#F48FB1"/>
 </g>
-<ellipse cx="28.6" cy="20.4" rx="0.7" ry="1.2" fill="#000"/>
-<ellipse cx="30.8" cy="20.4" rx="0.7" ry="1.2" fill="#000"/>
-<circle cx="24.2" cy="17" r="1.1" fill="#000"/>
+<circle cx="13" cy="18.5" r="1.2" fill="#000"/>
+<circle cx="23" cy="18.5" r="1.2" fill="#000"/>
+<ellipse cx="16.6" cy="23" rx="0.7" ry="1.1" fill="#000"/>
+<ellipse cx="19.4" cy="23" rx="0.7" ry="1.1" fill="#000"/>
 </svg>
