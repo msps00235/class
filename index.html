@@ -444,26 +444,30 @@ sakura:['sakura-branch','1f338','1f361'],
 lavender:['1fabb','1f98b','1f49c'],
 ocean:['1f433','1f420','1f419'],
 mermaid:['1f9dc-200d-2640-fe0f','1f41a','1fae7'],
-melon:['1f349','2600','softserve'],
+melon:['1f349','2600','1f366'],
 citrus:['1f34a','1f34b','1f343'],
 mint:['1f33f','1fad6','1f343'],
 nordic:['1f3d4','1f3e1','1f332'],
 notebook:['1f4d3','270f','1f4cf'],
 milktea:['1f9cb','1f36a','2615'],
-chalk:['blackboard','chalksticks','1f9f2'],
+chalk:['blackboard','chalksticks','1f3a4'],
 starry:['1f319','1f320','1f52d'],
 space:['1f680','1fa90','1f47d'],
 dino:['1f995','1f996','1f95a'],
-cat:['cat-stretch','yarn','1f43e'],
+cat:['cat-back','1f9f6','1f43e'],
 rainbow:['1f308','1f388','1f389'],
 festive:['1f3ee','1f9e7','1f386'],
 xmas:['1f384','1f385','1f381'],
 jobs:['1f46e','1f469-200d-2695-fe0f','1f477'],
 bugs:['1f41e','1f98b','1f40c'],
-world:['1f5fc','1f5fd','moai'],
+world:['1f5fc','1f5fd','e216'],
 campus:['1f3eb','1f68c','1f392'],
 stationery:['1f58d','2702','1f3a8'],
 music:['1f3bb','1f3ba','1f3b6']
+};
+/* 特製整幅場景（優先於三張排列） */
+var SCENES = {
+  lavender: '<image href="art/lavender-scene.svg" x="20" y="14" width="280" height="122"/>'
 };
 function currentThemeId(){
   return appliedTheme || (data.site && data.site.theme) || 'sunny';
@@ -484,7 +488,7 @@ function artImgs(id){
 }
 function bannerSvg(){
   return '<svg viewBox="0 0 960 150" preserveAspectRatio="xMinYMid slice" aria-hidden="true">'+
-    BANNER_BG + artImgs(currentThemeId()) + '</svg>';
+    BANNER_BG + (SCENES[currentThemeId()] || artImgs(currentThemeId())) + '</svg>';
 }
 function bannerInner(){
   var siteTitle = (loaded && !loadError) ? data.site.title : '';
