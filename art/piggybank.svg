@@ -1,16 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">
-<!-- 小豬撲滿（手繪，配合 Twemoji 風格） -->
-<circle cx="17.5" cy="8" r="3.6" fill="#F2C94C" stroke="#C9971B" stroke-width="1"/>
-<path d="M17.5 6.2 L17.5 9.8" stroke="#C9971B" stroke-width="1.2" stroke-linecap="round"/>
-<ellipse cx="17" cy="21" rx="13.5" ry="9.8" fill="#F79EB5"/>
-<path d="M22.5 12.6 L26.5 9.2 L27.8 13.8 Z" fill="#F0879F"/>
-<path d="M9.5 13.2 L6.8 9.6 L11.8 10.9 Z" fill="#F0879F"/>
-<rect x="12.6" y="11.2" width="8.8" height="2" rx="1" fill="#8A4B57"/>
-<ellipse cx="29.6" cy="20.6" rx="3.4" ry="4.1" fill="#F8B9CB"/>
-<ellipse cx="28.6" cy="20.4" rx="0.7" ry="1.2" fill="#8A4B57"/>
-<ellipse cx="30.8" cy="20.4" rx="0.7" ry="1.2" fill="#8A4B57"/>
-<circle cx="24.2" cy="17" r="1.1" fill="#5C3644"/>
-<rect x="8.6" y="28.6" width="3.6" height="4.4" rx="1.6" fill="#F0879F"/>
-<rect x="21.4" y="28.6" width="3.6" height="4.4" rx="1.6" fill="#F0879F"/>
-<path d="M3.8 21.5 Q 0.8 20.8 1.6 18.2 Q 2.2 16.2 4.6 17" fill="none" stroke="#F0879F" stroke-width="1.6" stroke-linecap="round"/>
+<!-- 最初版橫幅小豬（重現自舊網站橫幅） -->
+<g transform="translate(18,12.8) scale(0.55)" stroke="#4A3520" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="0" cy="10" rx="30" ry="22" fill="#F7A8B8"/>
+<path d="M-24 -8 L-16 -18 L-10 -8 Z" fill="#F7A8B8"/>
+<path d="M10 -10 L18 -19 L24 -8 Z" fill="#F7A8B8"/>
+<ellipse cx="14" cy="12" rx="9" ry="7" fill="rgba(255,255,255,.6)"/>
+<circle cx="11" cy="12" r="1.6" fill="#4A3520" stroke="none"/>
+<circle cx="17" cy="12" r="1.6" fill="#4A3520" stroke="none"/>
+<circle cx="-6" cy="4" r="2" fill="#4A3520" stroke="none"/>
+<line x1="-14" y1="30" x2="-14" y2="38"/>
+<line x1="8" y1="30" x2="8" y2="38"/>
+</g>
 </svg>
