@@ -70,6 +70,20 @@ function doPost(e) {
       return jsonReply({ ok: true });
     }
 
+    // 格言管理頁專用：只更新格言欄位，其餘內容以伺服器上的最新版為準
+    // （避免開很久的格言分頁用舊資料覆蓋掉消息、課表等）
+    if (req.action === 'savequotes' && Array.isArray(req.quotes)) {
+      var qsite = cleanSite(req.site);
+      var live = findDataFile(qsite);
+      if (!live) return jsonReply({ ok: false, error: 'no_data' });
+      var current = JSON.parse(live.getBlob().getDataAsString());
+      current.quotes = req.quotes;
+      var qtext = JSON.stringify(current);
+      saveData(qsite, qtext);
+      writeBackup(qsite, qtext);
+      return jsonReply({ ok: true });
+    }
+
     if (req.action === 'upload' && req.data64 && req.name) {
       return jsonReply(uploadAttachment(req));
     }

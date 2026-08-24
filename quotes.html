@@ -128,11 +128,13 @@ function loggedIn(){ return !!(pw && data && hash(pw) === data.pw); }
 
 function saveAll(msg){
   toast('儲存中…');
-  fetch(API_URL, {method:'POST', body: JSON.stringify({action:'save', pw: pw, data: data})})
+  // 只送格言清單，其餘內容由伺服器保持最新——這一頁永遠不會覆蓋到消息、課表等
+  fetch(API_URL, {method:'POST', body: JSON.stringify({action:'savequotes', pw: pw, quotes: data.quotes})})
     .then(function(r){ return r.json(); })
     .then(function(res){
       if (res && res.ok){ toast(msg || '已儲存！'); render(); }
       else if (res && res.error === 'bad_pw'){ pw=''; try{sessionStorage.removeItem('t404pw');}catch(e){} toast('密碼驗證失敗，請重新登入。'); render(); }
+      else if (res && res.error === 'bad_request'){ toast('後端尚未更新到最新版，請先重新部署 Apps Script。'); }
       else toast('儲存失敗，請再試一次。');
     })
     .catch(function(){ toast('連不上資料伺服器，請稍後再試。'); });

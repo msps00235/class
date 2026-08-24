@@ -386,25 +386,34 @@ var BANNER =
 '</svg>';
 
 /* ── 儲存（寫入資料伺服器） ── */
-var saving = false;
+var saving = false, savePending = false, pendingFlash = '';
 function save(flash){
-  if (saving) return;
   if (!API_URL){ toast('尚未設定資料伺服器（API_URL），無法儲存。'); return; }
+  // 儲存進行中又有新的變動：排隊，等這次結束後把最新狀態補存一次（不丟棄）
+  if (saving){ savePending = true; if (flash) pendingFlash = flash; return; }
   saving = true;
   toast('儲存中…', true);
   render();
   fetch(API_URL, {method:'POST', body: JSON.stringify({action:'save', pw: teacherPw, data: data})})
     .then(function(r){ return r.json(); })
     .then(function(res){
-      saving = false;
       if (res && res.ok){
         try { localStorage.setItem('cwdata', JSON.stringify(data)); } catch(e){}
         toast(flash || '已儲存！');
       }
       else if (res && res.error === 'bad_pw'){ toast('密碼驗證失敗，請登出後重新登入再試。'); }
       else { toast('儲存失敗，請再試一次。'); }
+      finishSave();
     })
-    .catch(function(){ saving = false; toast('連不上資料伺服器，請檢查網路後再試一次。'); });
+    .catch(function(){ toast('連不上資料伺服器，請檢查網路後再試一次。'); finishSave(); });
+}
+function finishSave(){
+  saving = false;
+  if (savePending){
+    savePending = false;
+    var f = pendingFlash; pendingFlash = '';
+    save(f);
+  }
 }
 
 /* ── 彈出視窗 ── */
@@ -1113,6 +1122,31 @@ if (API_URL){
       if (!cachedRaw){ loadError = true; loaded = true; render(); }
     });
 }
+// 切回這個分頁時背景更新資料，避免開很久的分頁顯示（或用）舊內容
+var lastRefresh = Date.now();
+function refreshData(){
+  if (!API_URL || !loaded || saving || schedEdit || overlayEl) return;
+  if (Date.now() - lastRefresh < 30000) return;
+  lastRefresh = Date.now();
+  fetch(API_URL)
+    .then(function(r){ return r.json(); })
+    .then(function(remote){
+      if (!(remote && remote.news && remote.schedule)) return;
+      if (saving || schedEdit || overlayEl) return; // 抓回來時已在編輯就放棄這次更新
+      var raw = JSON.stringify(remote);
+      try { localStorage.setItem('cwdata', raw); } catch(e){}
+      if (raw !== JSON.stringify(data)){
+        data = remote;
+        ensureDefaults();
+        render();
+      }
+    })
+    .catch(function(){});
+}
+document.addEventListener('visibilitychange', function(){
+  if (document.visibilityState === 'visible') refreshData();
+});
+window.addEventListener('focus', refreshData);
 })();
 </script>
 
