@@ -1,1 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><path fill="#31373D" d="M24 14H12s-5 6-5 10 11 11 11 11 11-7 11-11-5-10-5-10z"/><path fill="#292F33" d="M19.64 1.28c-.901-.704-2.377-.704-3.278 0L1.639 12.776c-.901.704-.901 1.856 0 2.56l14.722 11.495c.902.704 2.377.704 3.278 0l14.722-11.495c.902-.704.902-1.856 0-2.56L19.64 1.28z"/><path fill="#394146" d="M19.64 1.28c-.901-.704-2.377-.704-3.278 0L1.639 12.776c-.901.704-.901 1.856 0 2.56l14.722 11.495c.901.704 2.377.704 3.278 0l14.723-11.495c.901-.704.901-1.856 0-2.56L19.64 1.28z"/><path fill="#FCAB40" d="M8 25s-2 2-2 3v6s0 2 2 2 2-2 2-2v-6c0-1-2-3-2-3z"/><circle fill="#FDD888" cx="8" cy="26" r="3"/><path fill="#FCAB40" d="M8.001 27c-.552 0-1-.447-1-1v-3.958c-.042-.634.187-2.036 1.317-2.884l9.022-7.91c.416-.365 1.048-.323 1.411.093.364.415.322 1.047-.093 1.411l-9.08 7.958C8.974 21.166 9 21.982 9 21.99L9.002 26c0 .553-.448 1-1.001 1z"/><circle fill="#31373D" cx="18" cy="13" r="3"/></svg>
+<svg id="emoji" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+  <g id="color">
+    <polyline fill="#3f3f3f" stroke="#3f3f3f" stroke-miterlimit="10" stroke-width="2" points="56 27.9166 56 45.896 16 45.896 16 27.9166"/>
+    <line x1="10.0432" x2="10.0432" y1="28.5" y2="36.9063" fill="none" stroke="#f1b31c" stroke-miterlimit="10" stroke-width="2"/>
+    <circle cx="10.0432" cy="36.9063" r="2" fill="#f1b31c"/>
+    <polygon fill="#f1b31c" stroke="#f1b31c" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.747" points="12.0432 45.896 8.25 45.896 10.1466 37.7763 10.1466 37.7763 12.0432 45.896"/>
+    <rect x="4" y="22.875" width="64" height="5.0417" fill="#3f3f3f"/>
+    <polyline fill="#3f3f3f" points="56 30.9166 56 45.896 16 45.896 16 30.9166"/>
+  </g>
+  <g id="line">
+    <circle cx="36" cy="22.0023" r="3"/>
+    <rect x="4" y="22.875" width="64" height="5.0417" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+    <polyline fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.747" points="56 30.9166 56 45.896 16 45.896 16 30.9166"/>
+  </g>
+</svg>

@@ -117,7 +117,7 @@ var API_URL = '…';
 
 # 素材聲明
 
-橫幅插圖使用 [Twemoji](https://github.com/jdecked/twemoji)（Copyright 2020 Twitter, Inc and other contributors），依 [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/) 授權使用，檔案位於 `art/`。
+橫幅插圖使用 [OpenMoji](https://openmoji.org)（the open-source emoji and icon project），依 [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) 授權使用，檔案位於 `art/`。
 
 # 注意事項
 
