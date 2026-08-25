@@ -28,6 +28,7 @@ button{font-family:inherit}
 /* ── 橫幅 ── */
 .banner{position:relative;background:var(--bn-bg);overflow:hidden}
 .banner svg{display:block;width:100%;height:150px}
+.banner svg.bnart{position:absolute;left:0;top:0;width:auto;max-width:none}
 .bncustom{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .banner .title{position:absolute;right:20px;top:50%;transform:translateY(-50%);text-align:right;font-family:var(--font-hand)}
 .banner .title h1{margin:0;font-size:38px;font-weight:700;color:var(--bn-title);letter-spacing:2px;text-shadow:1px 1px 0 rgba(255,255,255,.35)}
@@ -488,8 +489,10 @@ function artImgs(id){
   return h;
 }
 function bannerSvg(){
-  return '<svg viewBox="0 0 960 150" preserveAspectRatio="xMinYMid slice" aria-hidden="true">'+
-    BANNER_BG + (SCENES[currentThemeId()] || artImgs(currentThemeId())) + '</svg>';
+  /* 背景層拉伸填滿寬度；插圖層固定比例靠左，寬螢幕上下不會被裁切 */
+  return '<svg viewBox="0 0 960 150" preserveAspectRatio="none" aria-hidden="true">'+BANNER_BG+'</svg>'+
+    '<svg class="bnart" viewBox="0 0 960 150" preserveAspectRatio="xMinYMid meet" aria-hidden="true">'+
+    (SCENES[currentThemeId()] || artImgs(currentThemeId())) + '</svg>';
 }
 function bannerInner(){
   var siteTitle = (loaded && !loadError) ? data.site.title : '';
